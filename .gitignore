@@ -1,3 +1,13 @@
+*.png
+junk*
+
+examples/*
+!examples/*.py
+!examples/*.lte
+examples/junk.lte
+
+src/cytpsa_src/*.c
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

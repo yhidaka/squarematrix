@@ -1,0 +1,85 @@
+0. on terminal, type the following to compile fts.f into fts.so, all the rest in this file can be negelcted.
+f2py -c fts.f -m fts
+
+1.to compile hellofortran.f in a python type:
+!f2py -c -m hellofortran hellofortran.f
+
+once this is done, it generate a file named "hellofortran.so".
+
+When type
+
+python hello.py
+
+the hello.py will import hellofortran, then execute the fortran code.
+
+
+2.dprod.f:
+
+in python:
+!f2py -m dprod -h dprod.pyf dprod.f
+
+generate a file dprod.pyf. modify this file to add "intent(in)", and "intent(out)", as shown in the file
+
+again in python:
+!f2py -c dprod.pyf dprod.f
+
+in python:
+import dprod
+help(dprod)
+y=dprod.dprod([2,3,4],3)
+y
+
+24.0
+
+
+
+
+tutolrial for f2py is in:
+http://nbviewer.ipython.org/github/jrjohansson/scientific-python-lectures/blob/master/Lecture-6A-Fortran-and-C.ipynb
+
+
+
+
+
+
+
+Fortran f77 compiler: /usr/bin/gfortran -Wall -ffixed-form -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran f90 compiler: /usr/bin/gfortran -Wall -fno-second-underscore -fPIC -O3 -funroll-loops
+Fortran fix compiler: /usr/bin/gfortran -Wall -ffixed-form -fno-second-underscore -Wall -fno-second-underscore -fPIC -O3 -funroll-loops
+compile options: '-I/tmp/tmp6yIoVx/src.linux-x86_64-2.6 -I/usr/lib/pymodules/python2.6/numpy/core/include -I/usr/include/python2.6 -c'
+gfortran:f77: tm.f
+tm.f:21.24:
+
+      if(abs(f(i))<1e-12, go to 100)                                    
+                        1
+Error: Syntax error in IF-expression at (1)
+tm.f:23.24:
+
+      if(abs(g(j))<1e-12, go to 200)                                    
+                        1
+Error: Syntax error in IF-expression at (1)
+tm.f:29.23:
+
+      if(power>norder+1, go to 300)                                     
+                       1
+Error: Syntax error in IF-expression at (1)
+Error: Unexpected end of file in 'tm.f'
+tm.f:21.24:
+
+      if(abs(f(i))<1e-12, go to 100)                                    
+                        1
+Error: Syntax error in IF-expression at (1)
+tm.f:23.24:
+
+      if(abs(g(j))<1e-12, go to 200)                                    
+                        1
+Error: Syntax error in IF-expression at (1)
+tm.f:29.23:
+
+      if(power>norder+1, go to 300)                                     
+                       1
+Error: Syntax error in IF-expression at (1)
+Error: Unexpected end of file in 'tm.f'
+error: Command "/usr/bin/gfortran -Wall -ffixed-form -fno-second-underscore -fPIC -O3 -funroll-loops -I/tmp/tmp6yIoVx/src.linux-x86_64-2.6 -I/usr/lib/pymodules/python2.6/numpy/core/include -I/usr/include/python2.6 -c -c tm.f -o /tmp/tmp6yIoVx/tm.o" failed with exit status 1
+
+
