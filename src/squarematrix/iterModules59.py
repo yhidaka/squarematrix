@@ -23,10 +23,10 @@ import pdb
 
 t0 = time.perf_counter()
 timing = [["in iterModule, start", time.perf_counter()]]
-#import jnfdefinition
-#jfdf = jnfdefinition
-#import squarematrixdefinition
-#sqdf = squarematrixdefinition
+# import jnfdefinition
+# jfdf = jnfdefinition
+# import squarematrixdefinition
+# sqdf = squarematrixdefinition
 
 from . import yunaff
 from . import (
@@ -261,10 +261,7 @@ def bnmphiCauchyCutoffWithIntrokam(
 
 
 def vthetascan_use_x0dlast3(
-    acoeff,
-    veq,
-    vscaninput,
-    wwJwinv,
+    acoeff, veq, vscaninput, wwJwinv,
 ):  # the module "vthetascan previously" is the module "fflucaccurate", see eq.8.1 of "jnf-resonance3.pdf", section 8.
     # For a given initial phi1,phi2, calculate its a,b and initial v10,v20, then scan theta02  to obtain v1,v2 at various rotated actions
 
@@ -1128,7 +1125,8 @@ def plotfftpeaks(
 
     plt.legend(loc="best")
     # plt.axis([-1.7,1.7,-1.7,1.7])
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.title(
         "Fig."
         + str(fign[0])
@@ -1147,7 +1145,8 @@ def plotfftpeaks(
     plt.plot(v2n.real, v2n.imag, "r.", markersize=7)
     plt.legend(loc="best")
     # plt.axis([-1.7,1.7,-1.7,1.7])
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     # plt.text(-0.35,0.3,'b',fontsize=30)
 
     plt.title(
@@ -1292,7 +1291,8 @@ def plotvnv0v1(
     plt.plot(v10[0].real, v10[0].imag, "b.", markersize=2, label="v10")
     plt.legend(loc="best")
     # plt.axis([-1.7,1.7,-1.7,1.7])
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.title(
         "Fig."
         + str(fign[0])
@@ -1317,7 +1317,8 @@ def plotvnv0v1(
     plt.plot(v20.real, v20.imag, "b.", markersize=2)
     plt.legend(loc="best")
     # plt.axis([-1.7,1.7,-1.7,1.7])
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     # plt.text(-0.35,0.3,'b',fontsize=30)
     if len(numerror) != 0:
         zerror = array([Zsd[i] for i in numerror]).transpose()
@@ -1642,7 +1643,8 @@ def plotxp0dAspectEqualGrid(x0d, xp0d, xylabel=("x0d", "xp0d"), fign=231):
     plt.xlabel(xylabel[0])
     plt.ylabel(xylabel[1])
     plt.title("Fig." + str(fign) + ", initial phase space scan")
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.savefig("junk" + str(fign) + ".png")
     return
 
@@ -1670,127 +1672,124 @@ def plot3Dxytrackingxyd(xy0, xy1, xy2, xy3, x0d, xp0d, y0d, yp0d, fign=[1, 2, 4,
         "fign": fign,
     }
 
-    #sv("junk", [1e0 * st, 1e0 * st1, 1e0 * std, 1e0 * std1, label])
-    #exec(compile(open("lt2plot4.py").read(), "lt2plot4.py", "exec"))
+    # sv("junk", [1e0 * st, 1e0 * st1, 1e0 * std, 1e0 * std1, label])
+    # exec(compile(open("lt2plot4.py").read(), "lt2plot4.py", "exec"))
     ## execfile('lt2plot.py')
     ## fig.1,st:y,yp vs xp;  fig.2 st1: x,xp-yp;
     ## fig.4,st:y,yp vs. x;  fig.5 st1: x,xp-y;
 
-    xlabel1 = label['xlabel1']
-    ylabel1 = label['ylabel1']
-    xlabel2 = label['xlabel2']
-    ylabel2 = label['ylabel2']
-    xlabel4 = label['xlabel4']
-    ylabel4 = label['ylabel4']
-    xlabel5 = label['xlabel5']
-    ylabel5 = label['ylabel5']
-    zlabel1 = label['zlabel1']
-    zlabel2 = label['zlabel2']
-    zlabel4 = label['zlabel4']
-    zlabel5 = label['zlabel5']
-    fign = label['fign']
+    xlabel1 = label["xlabel1"]
+    ylabel1 = label["ylabel1"]
+    xlabel2 = label["xlabel2"]
+    ylabel2 = label["ylabel2"]
+    xlabel4 = label["xlabel4"]
+    ylabel4 = label["ylabel4"]
+    xlabel5 = label["xlabel5"]
+    ylabel5 = label["ylabel5"]
+    zlabel1 = label["zlabel1"]
+    zlabel2 = label["zlabel2"]
+    zlabel4 = label["zlabel4"]
+    zlabel5 = label["zlabel5"]
+    fign = label["fign"]
 
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.ticker import FormatStrFormatter
 
-    matplotlib.rc('xtick', labelsize=20)
-    matplotlib.rc('ytick', labelsize=20)
+    matplotlib.rc("xtick", labelsize=20)
+    matplotlib.rc("ytick", labelsize=20)
 
     fig = plt.figure(1)
-    ax = fig.add_subplot(111, projection='3d')
-    zmax=max(st[1].real)
-    zmin=min(st[1].real)
-    zmean=np.mean(st[1])
+    ax = fig.add_subplot(111, projection="3d")
+    zmax = max(st[1].real)
+    zmin = min(st[1].real)
+    zmean = np.mean(st[1])
     print(" xp, zmax,zmin=", zmax, zmin)
 
-    ax.scatter(st[2], st[3], st[1], c='r', marker='.')
-    ax.scatter(std[2], std[3], std[1], c='b', marker='.')
-    ztick=ax.get_zticks(minor=False)
-    lbl=[ ('%0.03e'%a).split("e") for a in ztick]
-    lbl2=list(zip(*[ [i[0],str(int(i[1]))] for i in lbl]))
-    lbl3=["$ \\times 10^{"+str(tmp)+"}$" for tmp in lbl2[1] ]
-    lbl4=list(zip(*[lbl2[0],lbl3]))
-    lbl5=[ i[0]+i[1] for i in lbl4]
-    ax.set_zticklabels(lbl5,rotation=0,ha='center',size='xx-large')
-    ax.set_xlabel('\n\n'+xlabel1,fontsize=20)
-    ax.set_ylabel('\n\n'+ylabel1,fontsize=20)
-    ax.set_zlabel('                    '+zlabel1+'\n\n',fontsize=20)
-    #ax.set_xlim3d(-4,4)
-    #ax.set_ylim3d(-4,4)
+    ax.scatter(st[2], st[3], st[1], c="r", marker=".")
+    ax.scatter(std[2], std[3], std[1], c="b", marker=".")
+    ztick = ax.get_zticks(minor=False)
+    lbl = [("%0.03e" % a).split("e") for a in ztick]
+    lbl2 = list(zip(*[[i[0], str(int(i[1]))] for i in lbl]))
+    lbl3 = ["$ \\times 10^{" + str(tmp) + "}$" for tmp in lbl2[1]]
+    lbl4 = list(zip(*[lbl2[0], lbl3]))
+    lbl5 = [i[0] + i[1] for i in lbl4]
+    ax.set_zticklabels(lbl5, rotation=0, ha="center", size="xx-large")
+    ax.set_xlabel("\n\n" + xlabel1, fontsize=20)
+    ax.set_ylabel("\n\n" + ylabel1, fontsize=20)
+    ax.set_zlabel("                    " + zlabel1 + "\n\n", fontsize=20)
+    # ax.set_xlim3d(-4,4)
+    # ax.set_ylim3d(-4,4)
 
-    plt.title('Fig.'+str(fign[0]))
-    plt.savefig('junk1.png')
-
-
+    plt.title("Fig." + str(fign[0]))
+    plt.savefig("junk1.png")
 
     fig = plt.figure(2)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
-    zmax=max(st1[1].real)
-    zmin=min(st1[1].real)
-    zmean=np.mean(st1[1])
+    zmax = max(st1[1].real)
+    zmin = min(st1[1].real)
+    zmean = np.mean(st1[1])
 
-    print(" for yp,  zmax,zmin=",zmax,zmin)
+    print(" for yp,  zmax,zmin=", zmax, zmin)
 
-    ax.scatter(st1[2], st1[3], st1[1], c='r', marker='.')
-    ax.scatter(std1[2], std1[3], std1[1], c='b', marker='.')
+    ax.scatter(st1[2], st1[3], st1[1], c="r", marker=".")
+    ax.scatter(std1[2], std1[3], std1[1], c="b", marker=".")
 
-    ax.set_xlabel('\n\n'+xlabel2,fontsize=20)
-    ax.set_ylabel('\n\n'+ylabel2,fontsize=20)
-    ax.set_zlabel('                    '+zlabel2+'\n\n',fontsize=20)
-    #ax.set_xlim3d(-4,4)
-    #ax.set_ylim3d(-4,4)
-    #ax.set_zlim3d(zmin*0.,zmax*1.1)
-    plt.title('Fig.'+str(fign[1]))
-    plt.savefig('junk2.png')
-
+    ax.set_xlabel("\n\n" + xlabel2, fontsize=20)
+    ax.set_ylabel("\n\n" + ylabel2, fontsize=20)
+    ax.set_zlabel("                    " + zlabel2 + "\n\n", fontsize=20)
+    # ax.set_xlim3d(-4,4)
+    # ax.set_ylim3d(-4,4)
+    # ax.set_zlim3d(zmin*0.,zmax*1.1)
+    plt.title("Fig." + str(fign[1]))
+    plt.savefig("junk2.png")
 
     fig = plt.figure(4)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
-    zmax=max(st[0].real)
-    zmin=min(st[0].real)
-    zmean=np.mean(st[0])
-    print(" for x,  zmax,zmin=",zmax,zmin)
-    #ax.set_zlim3d(zmin*0.,zmax*1.1)
-    ax.scatter(st[2], st[3], st[0], c='r', marker='.')
-    ax.scatter(std[2], std[3], std[0], c='b', marker='.')
-    ztick=ax.get_zticks(minor=False)
-    lbl=[ ('%0.3e'%a).split("e") for a in ztick]
-    lbl2=list(zip(*[ [i[0],str(int(i[1]))] for i in lbl]))
-    lbl3=["$ \\times 10^{"+str(tmp)+"}$" for tmp in lbl2[1] ]
-    lbl4=list(zip(*[lbl2[0],lbl3]))
-    lbl5=[ i[0]+i[1] for i in lbl4]
-    ax.set_zticklabels(lbl5,rotation=0,ha='center',size='xx-large')
-    #plt.gca().zaxis.set_major_formatter(FormatStrFormatter('%.1e'))
-    ax.set_xlabel('\n\n'+xlabel4,fontsize=20)
-    ax.set_ylabel('\n\n'+ylabel4,fontsize=20)
-    ax.set_zlabel('                    '+zlabel4+'\n\n',fontsize=20)
-    #ax.set_xlim3d(-4,4)
-    #ax.set_ylim3d(-4,4)
+    zmax = max(st[0].real)
+    zmin = min(st[0].real)
+    zmean = np.mean(st[0])
+    print(" for x,  zmax,zmin=", zmax, zmin)
+    # ax.set_zlim3d(zmin*0.,zmax*1.1)
+    ax.scatter(st[2], st[3], st[0], c="r", marker=".")
+    ax.scatter(std[2], std[3], std[0], c="b", marker=".")
+    ztick = ax.get_zticks(minor=False)
+    lbl = [("%0.3e" % a).split("e") for a in ztick]
+    lbl2 = list(zip(*[[i[0], str(int(i[1]))] for i in lbl]))
+    lbl3 = ["$ \\times 10^{" + str(tmp) + "}$" for tmp in lbl2[1]]
+    lbl4 = list(zip(*[lbl2[0], lbl3]))
+    lbl5 = [i[0] + i[1] for i in lbl4]
+    ax.set_zticklabels(lbl5, rotation=0, ha="center", size="xx-large")
+    # plt.gca().zaxis.set_major_formatter(FormatStrFormatter('%.1e'))
+    ax.set_xlabel("\n\n" + xlabel4, fontsize=20)
+    ax.set_ylabel("\n\n" + ylabel4, fontsize=20)
+    ax.set_zlabel("                    " + zlabel4 + "\n\n", fontsize=20)
+    # ax.set_xlim3d(-4,4)
+    # ax.set_ylim3d(-4,4)
 
-    plt.title('Fig.'+str(fign[2]))
-    plt.savefig('junk4.png')
+    plt.title("Fig." + str(fign[2]))
+    plt.savefig("junk4.png")
 
     fig = plt.figure(5)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
-    zmax=max(st1[0].real)
-    zmin=min(st1[0].real)
-    zmean=np.mean(st1[0])
+    zmax = max(st1[0].real)
+    zmin = min(st1[0].real)
+    zmean = np.mean(st1[0])
 
-    print(" for y,  zmax,zmin=",zmax,zmin)
+    print(" for y,  zmax,zmin=", zmax, zmin)
 
-    ax.scatter(st1[2], st1[3], st1[0], c='r', marker='.')
-    ax.scatter(std1[2], std1[3], std1[0], c='b', marker='.')
-    ax.set_xlabel('\n\n'+xlabel5,fontsize=20)
-    ax.set_ylabel('\n\n'+ylabel5,fontsize=20)
-    ax.set_zlabel('                    '+zlabel5+'\n\n',fontsize=20)
-    #ax.set_xlim3d(-4,4)
-    #ax.set_ylim3d(-4,4)
-    #ax.set_zlim3d(zmin*0.,zmax*1.1)
-    plt.title('Fig.'+str(fign[3]))
-    plt.savefig('junk5.png')
+    ax.scatter(st1[2], st1[3], st1[0], c="r", marker=".")
+    ax.scatter(std1[2], std1[3], std1[0], c="b", marker=".")
+    ax.set_xlabel("\n\n" + xlabel5, fontsize=20)
+    ax.set_ylabel("\n\n" + ylabel5, fontsize=20)
+    ax.set_zlabel("                    " + zlabel5 + "\n\n", fontsize=20)
+    # ax.set_xlim3d(-4,4)
+    # ax.set_ylim3d(-4,4)
+    # ax.set_zlim3d(zmin*0.,zmax*1.1)
+    plt.title("Fig." + str(fign[3]))
+    plt.savefig("junk5.png")
 
 
 def plot2Dcrossection(
@@ -1886,7 +1885,8 @@ def plotv1nv2nThetaVGrid(v1n, v2n, n_theta, fign=(25, 27, 29)):
     plt.plot(v1n.real, v1n.imag, "r.", markersize=12)
     plt.xlabel("Re(v1(n))")
     plt.ylabel("Im(v1(n))")
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.title(
         "Fig."
         + str(fign[0])
@@ -1897,7 +1897,8 @@ def plotv1nv2nThetaVGrid(v1n, v2n, n_theta, fign=(25, 27, 29)):
     plt.plot(v2n.real, v2n.imag, "r.", markersize=12)
     plt.xlabel("Re(v2(n))")
     plt.ylabel("Im(v2(n))")
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.title(
         "Fig."
         + str(fign[1])
@@ -1927,124 +1928,124 @@ def plot3d(st, st1, stlabel, st1label, fign=[91, 92, 93, 94]):
         "fign": fign,
     }
 
-    #sv("junk", [st, st1, label])
-    #exec(compile(open("lt2plot3.py").read(), "lt2plot3.py", "exec"))
+    # sv("junk", [st, st1, label])
+    # exec(compile(open("lt2plot3.py").read(), "lt2plot3.py", "exec"))
 
-    xlabel1 = label['xlabel1']
-    ylabel1=label['ylabel1']
-    xlabel2=label['xlabel2']
-    ylabel2=label['ylabel2']
-    xlabel4=label['xlabel4']
-    ylabel4=label['ylabel4']
-    xlabel5=label['xlabel5']
-    ylabel5=label['ylabel5']
-    zlabel1=label['zlabel1']
-    zlabel2=label['zlabel2']
-    zlabel4=label['zlabel4']
-    zlabel5=label['zlabel5']
-    fig1=label['fig1']
-    fig2=label['fig2']
-    fig3=label['fig3']
-    fig4=label['fig4']
-    fign=label['fign']
+    xlabel1 = label["xlabel1"]
+    ylabel1 = label["ylabel1"]
+    xlabel2 = label["xlabel2"]
+    ylabel2 = label["ylabel2"]
+    xlabel4 = label["xlabel4"]
+    ylabel4 = label["ylabel4"]
+    xlabel5 = label["xlabel5"]
+    ylabel5 = label["ylabel5"]
+    zlabel1 = label["zlabel1"]
+    zlabel2 = label["zlabel2"]
+    zlabel4 = label["zlabel4"]
+    zlabel5 = label["zlabel5"]
+    fig1 = label["fig1"]
+    fig2 = label["fig2"]
+    fig3 = label["fig3"]
+    fig4 = label["fig4"]
+    fign = label["fign"]
 
     from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.ticker import FormatStrFormatter
 
-    matplotlib.rc('xtick', labelsize=20)
-    matplotlib.rc('ytick', labelsize=20)
+    matplotlib.rc("xtick", labelsize=20)
+    matplotlib.rc("ytick", labelsize=20)
 
     fig = plt.figure(fig1)
-    ax = fig.add_subplot(111, projection='3d')
-    zmax=max(st[0].real)
-    zmin=min(st[0].real)
-    zmean=np.mean(st[0])
-    print(" xp, zmax,zmin=",zmax,zmin)
+    ax = fig.add_subplot(111, projection="3d")
+    zmax = max(st[0].real)
+    zmin = min(st[0].real)
+    zmean = np.mean(st[0])
+    print(" xp, zmax,zmin=", zmax, zmin)
 
-    ax.scatter(st[2], st[3], st[0], c='r', marker='o')
-    ztick=ax.get_zticks(minor=False)
-    lbl=[ ('%0.03e'%a).split("e") for a in ztick]
-    lbl2=list(zip(*[ [i[0],str(int(i[1]))] for i in lbl]))
-    lbl3=["$ \\times 10^{"+str(tmp)+"}$" for tmp in lbl2[1] ]
-    lbl4=list(zip(*[lbl2[0],lbl3]))
-    lbl5=[ i[0]+i[1] for i in lbl4]
-    #ax.set_zticklabels(lbl5,rotation=0,ha='center',size='xx-large')
-    ax.set_xlabel('\n\n'+xlabel1,fontsize=20)
-    ax.set_ylabel('\n\n'+ylabel1,fontsize=20)
-    ax.set_zlabel('                         \n\n\n\n'+zlabel1+'\n\n',fontsize=20)
-    #ax.set_xlim3d(-4,4)
-    #ax.set_ylim3d(-4,4)
-    ax.set_zlim3d(zmin*0.,zmax*1.1)
+    ax.scatter(st[2], st[3], st[0], c="r", marker="o")
+    ztick = ax.get_zticks(minor=False)
+    lbl = [("%0.03e" % a).split("e") for a in ztick]
+    lbl2 = list(zip(*[[i[0], str(int(i[1]))] for i in lbl]))
+    lbl3 = ["$ \\times 10^{" + str(tmp) + "}$" for tmp in lbl2[1]]
+    lbl4 = list(zip(*[lbl2[0], lbl3]))
+    lbl5 = [i[0] + i[1] for i in lbl4]
+    # ax.set_zticklabels(lbl5,rotation=0,ha='center',size='xx-large')
+    ax.set_xlabel("\n\n" + xlabel1, fontsize=20)
+    ax.set_ylabel("\n\n" + ylabel1, fontsize=20)
+    ax.set_zlabel("                         \n\n\n\n" + zlabel1 + "\n\n", fontsize=20)
+    # ax.set_xlim3d(-4,4)
+    # ax.set_ylim3d(-4,4)
+    ax.set_zlim3d(zmin * 0.0, zmax * 1.1)
 
-    plt.title('Fig.'+str(fign[0]))
-    plt.savefig('junk'+str(fig1)+'.png')
+    plt.title("Fig." + str(fign[0]))
+    plt.savefig("junk" + str(fig1) + ".png")
 
     fig = plt.figure(fig2)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
-    zmax=max(st[1].real)
-    zmin=min(st[1].real)
-    zmean=np.mean(st1[1])
+    zmax = max(st[1].real)
+    zmin = min(st[1].real)
+    zmean = np.mean(st1[1])
 
-    print(" for yp,  zmax,zmin=",zmax,zmin)
+    print(" for yp,  zmax,zmin=", zmax, zmin)
 
-    ax.scatter(st[2], st[3], st[1], c='r', marker='o')
+    ax.scatter(st[2], st[3], st[1], c="r", marker="o")
 
-    ax.set_xlabel('\n\n'+xlabel2,fontsize=20)
-    ax.set_ylabel('\n\n'+ylabel2,fontsize=20)
-    ax.set_zlabel('                     \n\n\n\n'+zlabel2+'\n\n',fontsize=20)
-    #ax.set_xlim3d(-4,4)
-    #ax.set_ylim3d(-4,4)
-    ax.set_zlim3d(zmin*0.,zmax*1.1)
-    plt.title('Fig.'+str(fign[1]))
-    plt.savefig('junk'+str(fig2)+'.png')
+    ax.set_xlabel("\n\n" + xlabel2, fontsize=20)
+    ax.set_ylabel("\n\n" + ylabel2, fontsize=20)
+    ax.set_zlabel("                     \n\n\n\n" + zlabel2 + "\n\n", fontsize=20)
+    # ax.set_xlim3d(-4,4)
+    # ax.set_ylim3d(-4,4)
+    ax.set_zlim3d(zmin * 0.0, zmax * 1.1)
+    plt.title("Fig." + str(fign[1]))
+    plt.savefig("junk" + str(fig2) + ".png")
 
     fig = plt.figure(fig3)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
-    zmax=max(st1[0].real)
-    zmin=min(st1[0].real)
-    zmean=np.mean(st1[0])
-    print(" for x,  zmax,zmin=",zmax,zmin)
-    ax.set_zlim3d(zmin*0.,zmax*1.1)
-    ax.scatter(st1[2], st1[3], st1[0], c='r', marker='o')
-    ztick=ax.get_zticks(minor=False)
-    lbl=[ ('%0.3e'%a).split("e") for a in ztick]
-    lbl2=list(zip(*[ [i[0],str(int(i[1]))] for i in lbl]))
-    lbl3=["$ \\times 10^{"+str(tmp)+"}$" for tmp in lbl2[1] ]
-    lbl4=list(zip(*[lbl2[0],lbl3]))
-    lbl5=[ i[0]+i[1] for i in lbl4]
-    #ax.set_zticklabels(lbl5,rotation=0,ha='center',size='xx-large')
-    #plt.gca().zaxis.set_major_formatter(FormatStrFormatter('%.1e'))
-    ax.set_xlabel('\n\n'+xlabel4,fontsize=20)
-    ax.set_ylabel('\n\n'+ylabel4,fontsize=20)
-    ax.set_zlabel('                     \n\n\n\n'+zlabel4+'\n\n',fontsize=20)
-    #ax.set_xlim3d(-4,4)
-    #ax.set_ylim3d(-4,4)
+    zmax = max(st1[0].real)
+    zmin = min(st1[0].real)
+    zmean = np.mean(st1[0])
+    print(" for x,  zmax,zmin=", zmax, zmin)
+    ax.set_zlim3d(zmin * 0.0, zmax * 1.1)
+    ax.scatter(st1[2], st1[3], st1[0], c="r", marker="o")
+    ztick = ax.get_zticks(minor=False)
+    lbl = [("%0.3e" % a).split("e") for a in ztick]
+    lbl2 = list(zip(*[[i[0], str(int(i[1]))] for i in lbl]))
+    lbl3 = ["$ \\times 10^{" + str(tmp) + "}$" for tmp in lbl2[1]]
+    lbl4 = list(zip(*[lbl2[0], lbl3]))
+    lbl5 = [i[0] + i[1] for i in lbl4]
+    # ax.set_zticklabels(lbl5,rotation=0,ha='center',size='xx-large')
+    # plt.gca().zaxis.set_major_formatter(FormatStrFormatter('%.1e'))
+    ax.set_xlabel("\n\n" + xlabel4, fontsize=20)
+    ax.set_ylabel("\n\n" + ylabel4, fontsize=20)
+    ax.set_zlabel("                     \n\n\n\n" + zlabel4 + "\n\n", fontsize=20)
+    # ax.set_xlim3d(-4,4)
+    # ax.set_ylim3d(-4,4)
 
-    plt.title('Fig.'+str(fign[2]))
+    plt.title("Fig." + str(fign[2]))
 
-    plt.savefig('junk'+str(fig3)+'.png')
+    plt.savefig("junk" + str(fig3) + ".png")
 
     fig = plt.figure(fig4)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
-    zmax=max(st1[1].real)
-    zmin=min(st1[1].real)
-    zmean=np.mean(st1[1])
+    zmax = max(st1[1].real)
+    zmin = min(st1[1].real)
+    zmean = np.mean(st1[1])
 
-    print(" for y,  zmax,zmin=",zmax,zmin)
+    print(" for y,  zmax,zmin=", zmax, zmin)
 
-    ax.scatter(st1[2], st1[3], st1[1], c='r', marker='o')
-    ax.set_xlabel('\n\n'+xlabel5,fontsize=20)
-    ax.set_ylabel('\n\n'+ylabel5,fontsize=20)
-    ax.set_zlabel('                     \n\n\n\n'+zlabel5+'\n\n',fontsize=20)
-    #ax.set_xlim3d(-4,4)
-    #ax.set_ylim3d(-4,4)
-    ax.set_zlim3d(zmin*0.,zmax*1.1)
-    plt.title('Fig.'+str(fign[3]))
+    ax.scatter(st1[2], st1[3], st1[1], c="r", marker="o")
+    ax.set_xlabel("\n\n" + xlabel5, fontsize=20)
+    ax.set_ylabel("\n\n" + ylabel5, fontsize=20)
+    ax.set_zlabel("                     \n\n\n\n" + zlabel5 + "\n\n", fontsize=20)
+    # ax.set_xlim3d(-4,4)
+    # ax.set_ylim3d(-4,4)
+    ax.set_zlim3d(zmin * 0.0, zmax * 1.1)
+    plt.title("Fig." + str(fign[3]))
 
-    plt.savefig('junk' + str(fig4) + '.png')
+    plt.savefig("junk" + str(fig4) + ".png")
 
 
 def plotthetavGrid(thetav10, thetav20, thetav11, thetav21, fign=(280, 281)):
@@ -2125,7 +2126,8 @@ def plotscatterbnm(bnm1, bnm2, n_theta, cutoff12=(-7.5, -10.5), fign=(46, 47)):
     plt.title("Fig." + str(fign[0]) + " distribution of log|bnm1[k,n]|>" + str(cutoff))
     plt.axis([-21, 21, -21, 21])
     # plt.gca().invert_yaxis()#This make the position of y same as row number of a matrix
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.savefig("junk" + str(fign[0]) + ".png")
 
     cutoff = cutoff12[1]
@@ -2155,7 +2157,8 @@ def plotscatterbnm(bnm1, bnm2, n_theta, cutoff12=(-7.5, -10.5), fign=(46, 47)):
     plt.title("Fig." + str(fign[1]) + " distribution of log|bnm2[k,n]|>" + str(cutoff))
     plt.axis([-21, 21, -21, 21])
     # plt.gca().invert_yaxis()#This make the position of y same as row number of a matrix
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.savefig("junk" + str(fign[1]) + ".png")
 
 
@@ -2360,7 +2363,8 @@ def plot2Dxytracking(xy, bKi, xfix, xpfix, fign=(311, 312)):
     plt.figure(fign[0])
     plt.plot(zx.real, zx.imag, "g.", zy.real, zy.imag, "r.")
     plt.plot(zx[0].real, zx[0].imag, "bo", zy[0].real, zy[0].imag, "ro")
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.title("Fig." + str(fign[0]) + " zx,zxs,zy,zys without xfix,xpfix")
     plt.savefig("junk" + str(fign[0]) + ".png")
 
@@ -2380,7 +2384,8 @@ def plot2Dxytracking(xy, bKi, xfix, xpfix, fign=(311, 312)):
 def plot2DvnTracking(vn, fign=(24, 23)):
     plt.figure(fign[0], figsize=(5, 5.1))
     plt.plot(vn[1].real, vn[1].imag, "r.", label="v2 from tracking")
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     # plt.axis([-1.4,1.4,-1.4,1.4])
     plt.xlabel("Re" + r"$(v_2)$", fontsize=35, labelpad=15)
     plt.ylabel("Im" + r"$(v_2)$", fontsize=35, labelpad=-15)
@@ -2390,7 +2395,8 @@ def plot2DvnTracking(vn, fign=(24, 23)):
 
     plt.figure(fign[1], figsize=(5, 5.1))
     plt.plot(vn[0].real, vn[0].imag, "r.", label="v1 from tracking")
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     # plt.axis([-1.4,1.4,-1.4,1.4])
     plt.xlabel("Re" + r"$(v_1)$", fontsize=35, labelpad=11)
     plt.ylabel("Im" + r"$(v_1)$", fontsize=35, labelpad=-11)
@@ -2436,7 +2442,8 @@ def plot2DV12xyd0Grid(xyd0, vna, Zpar, fign=(23, 24), label="v10 from xyd0 scan"
         + ' thetav10,thetav20 of eq.26,eq.27 \nof "latticenonlinearResonances.lyx" \n(initial phases, zero order action)'
     )
     plt.legend(loc="best")
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.savefig("junk" + str(fign[0]) + ".png")
     plt.figure(fign[1])
     plt.plot(vtmp[1].real, vtmp[1].imag, ".", markersize=9, label="v2 " + label)
@@ -2446,7 +2453,8 @@ def plot2DV12xyd0Grid(xyd0, vna, Zpar, fign=(23, 24), label="v10 from xyd0 scan"
         + ' thetav10,thetav20 of eq.26,eq.27 \nof "latticenonlinearResonances.lyx" \n(initial phases, zero order action)'
     )
     plt.legend(loc="best")
-    plt.axes().set_aspect("equal")
+    plt.axis("equal")
+    # plt.axes().set_aspect("equal")
     plt.savefig("junk" + str(fign[1]) + ".png")
     return vtmp
 
