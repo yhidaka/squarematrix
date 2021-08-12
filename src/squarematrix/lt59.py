@@ -23,15 +23,16 @@ from . import squarematrixdefinition as sqdf
 
 # from .fortran import zcolnew
 # import scipy
-#from scipy import loadtxt
-#from scipy.interpolate import interp2d
+# from scipy import loadtxt
+# from scipy.interpolate import interp2d
 # from scipy import optimize
 
 # import zcol
 from . import yunaff
 from . import iterModules59 as vph  # iterModules52 as vph
-#import lte2tpsa2map45 as lte2tpsa
-#from cytpsa import TPS
+
+# import lte2tpsa2map45 as lte2tpsa
+# from cytpsa import TPS
 from . import (
     veq59 as veq,
 )  # copied from veq52.py. veqnsls2sr_supercell_ch77_20150406_1_deltap0_lt11 as veq#veq20140204_bare_1supcell_deltapm02 as veq
@@ -44,9 +45,9 @@ from .iterlt59 import change_n_theta
 t0.append(["41", time.time(), time.time() - t0[-1][1]])
 
 ## reload(lte2tpsa)
-#reload(vph)
-#reload(veq)
-#reload(lt53)
+# reload(vph)
+# reload(veq)
+# reload(lt53)
 ## reload(jfdf)
 
 """
@@ -113,9 +114,9 @@ def cl():
 t0.append(["97", time.time(), time.time() - t0[-1][1]])
 
 # 3. Define functions for analysis
-#print("\n3. Define functions for analysis.")
-#from mpl_toolkits.mplot3d import Axes3D
-#from matplotlib.ticker import FormatStrFormatter
+# print("\n3. Define functions for analysis.")
+# from mpl_toolkits.mplot3d import Axes3D
+# from matplotlib.ticker import FormatStrFormatter
 
 
 def nuxvzx(
@@ -124,7 +125,7 @@ def nuxvzx(
     npass=800,
     plotnuxvzx=True,
     xall=np.arange(-18e-3, -19.02e-3, -0.05e-3),
-    diverge_condition=4,
+    diverge_condition=3,
 ):  # just give k vs. xmax, ymax
     x_iter_lndxy, xset, cutoff = plot3Dxydconvergence(arecord, plot3d=False)
     xset, convergencerate, arminidx, idxminlist, diverge = scanmin(
@@ -325,8 +326,10 @@ def nuxvzx(
                 )
             plt.legend(loc="best", prop={"size": 6})
             plt.savefig("junk3.png")
+        else:
+            nuxy = None
         plt.show()
-    return idxminlist, convergencerate, nux, nuy, diverge
+    return idxminlist, convergencerate, nux, nuy, diverge, nuxy, xset
 
 
 # this uses the result of scan_around_DA() to find the maximum growing rate at index i (e.g., i=185) in the bnm spectrum
@@ -425,8 +428,8 @@ def plot3Dxydconvergence(arecord, plot3d=True):
     ]
     tmp2 = np.array(list(zip(*tmp12)))
 
-    #from mpl_toolkits.mplot3d import Axes3D
-    #from matplotlib.ticker import FormatStrFormatter
+    # from mpl_toolkits.mplot3d import Axes3D
+    # from matplotlib.ticker import FormatStrFormatter
 
     xset = np.sort(list(set(xlist1)))
 
@@ -980,6 +983,7 @@ def plotxyz(
 # scanxy()
 # plt.show()
 
+
 def single_point_xyntheta(
     x=-31e-3,
     y=4e-3,
@@ -1242,7 +1246,10 @@ def scanxy(
 
 
 def scan_n_theta(
-    x=-7e-3, y=4e-3, ntheta_lim=20, ar_iter_number=4,
+    x=-7e-3,
+    y=4e-3,
+    ntheta_lim=20,
+    ar_iter_number=4,
     xyntheta_scan_input=None,
     init_tpsa_input=None,
     init_tpsa_output=None,
@@ -1440,6 +1447,7 @@ def xyspectrum(ari, npass=800, fign=(128, 129), tracking=True):
 
 ################################# less impotatfunctions
 
+
 def example4(y=4e-3, ar_ntheta=12):
     tt0 = [["example4 start", time.time(), 0]]
     print(tt0)
@@ -1492,6 +1500,7 @@ def example4(y=4e-3, ar_ntheta=12):
     tt1 = [["example4 end", time.time(), time.time() - tt0[0][1]]]
     print(tt1)
     return ar
+
 
 # First scanusing xacoeff0 from -1mm to -28mm, then search for DA using nth1,nth2 only at divergence border.
 def scanDA(
@@ -1684,6 +1693,7 @@ def scanDA(
     print(tt1)
     return xset, minzlist, idxminlist, cutoff, ar, scanDAoutput
 
+
 # scan_nth12_around_DA scan for n_theta=50 and 60 only. To be used in scanDA
 def scan_nth12_around_DA(xmax, idx, scantheta_input_list):
     (
@@ -1780,10 +1790,7 @@ def find_minimum_converge(
 
 
 def find_first_converge(
-    x=-2e-3,
-    y=14e-3,
-    ntheta_lim=10,
-    init_tpsa_output=None,  # init_tpsa_output
+    x=-2e-3, y=14e-3, ntheta_lim=10, init_tpsa_output=None,  # init_tpsa_output
 ):
     # ar,ntheta=find_first_converge(x=-4e-3, y=14e-3, ntheta_lim=10)
     # lt53.plot1Dtheta_vs_xydconvergence_from_3Ddata(ar, n_theta=ntheta, plot130=True)
@@ -1922,13 +1929,16 @@ def ar2_scanx(ntheta=12, y=4e-3, ar2_iter_number=12, n_theta_cutoff_ratio=(1, 0)
     ar2 = []
     for x in np.arange(-1.0e-3, -28.1e-3, -1e-3):
         try:
-            ar2 = ar2 + ar2_xyntheta(
-                x,
-                y,
-                ntheta,
-                xyntheta_scan_input=xyntheta_scan_input,
-                init_tpsa_output=init_tpsa_output,
-            )[1]
+            ar2 = (
+                ar2
+                + ar2_xyntheta(
+                    x,
+                    y,
+                    ntheta,
+                    xyntheta_scan_input=xyntheta_scan_input,
+                    init_tpsa_output=init_tpsa_output,
+                )[1]
+            )
         except Exception as err:
             print(dir(err))
             print(err.args)
@@ -1984,14 +1994,17 @@ def ar2_scan_n_theta(
     ar2 = []
     for ntheta in range(4, ntheta_lim):
         try:
-            ar2 = ar2 + ar2_xyntheta(
-                x,
-                y,
-                ntheta,
-                xyntheta_scan_input=xyntheta_scan_input,
-                init_tpsa_output=init_tpsa_output,
-                scantype="including first iteration",
-            )[1]
+            ar2 = (
+                ar2
+                + ar2_xyntheta(
+                    x,
+                    y,
+                    ntheta,
+                    xyntheta_scan_input=xyntheta_scan_input,
+                    init_tpsa_output=init_tpsa_output,
+                    scantype="including first iteration",
+                )[1]
+            )
         except Exception as err:
             print(dir(err))
             print(err.args)
@@ -2001,11 +2014,7 @@ def ar2_scan_n_theta(
     lt53.plot1Dtheta_vs_xydconvergence_from_3Ddata(ar2, n_theta=17, plot130=True)
     # lt53.plot1Dtheta_vs_xacoeffnewconvergence_from_3Ddata(ar2, n_theta=17, plot131=True)
     thetaset, minzlist, arminidx, idxminlist, diverge = scanmin(
-        x_iter_lndxy,
-        n_thetaset,
-        cutoff,
-        plotscmain="lndxy vs nth",
-        scantype=scantype,
+        x_iter_lndxy, n_thetaset, cutoff, plotscmain="lndxy vs nth", scantype=scantype,
     )
     plt.tight_layout()
     tt1 = [["scan_ntheta end", time.time(), time.time() - tt0[0][1]]]
@@ -2015,7 +2024,8 @@ def ar2_scan_n_theta(
     # xyspectrum(ar2[51])
     return ar2
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     xyntheta_scan_input = dict(
         ar_iter_number=4,  # 3  #
@@ -2062,7 +2072,7 @@ if __name__ == '__main__':
         xyspectrum(ar[51])
 
     if False:
-        # Same as examples/example5.py
+        # differs from examples/example5.py by scanDA in exampl4 is replaced by scanx in example5.
         ar = example4()
         example2(ar)
 

@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 num_threads_to_use = 2
 if num_threads_to_use is not None:
@@ -34,7 +35,7 @@ init_tpsa_input = {
     "cutoff": 4,  # 12, #
     "norder": 5,
     "norder_jordan": 3,
-    "use_existing_tpsa": 0,  # 1, #
+    "use_existing_tpsa": 1,  # 0,  #
     "oneturntpsa": "tpsa",
     "deltap": -0.025,
     "ltefilename": "20140204_bare_1supcell",
@@ -48,11 +49,8 @@ ar, minzlist, idxminlist = scanx(init_tpsa_output=init_tpsa_output)
 
 tt0 = [["nuxvzx start", time.perf_counter(), 0]]
 print(tt0)
-idxminlist, convergencerate, nux, nuy, diverge = nuxvzx(
-    ar,
-    tracking=True,
-    npass=800,
-    xall=[],
+idxminlist, convergencerate, nux, nuy, diverge, nuxy, xset = nuxvzx(
+    ar, tracking=True, npass=800, xall=[],
 )  # False)  # True)  #
 tt1 = [["nuxvzx end", time.perf_counter(), time.perf_counter() - tt0[0][1]]]
 print(tt0)
@@ -64,4 +62,17 @@ plot3Dxydconvergence(ar)
 print(tt0)
 print(tt1)
 
+nuxerror = [nux[j] - nuxy[0][j] for j in range(len(nux)) if diverge[j, 1] == 0]
+nuyerror = [nuy[j] - nuxy[1][j] for j in range(len(nuy)) if diverge[j, 1] == 0]
+xset_convergent = [xset[j] for j in range(len(xset)) if diverge[j, 1] == 0]
+plt.figure(4)
+plt.plot(xset_convergent, nuxerror, ".", xset_convergent, nuyerror, ".")
+plt.title("Fig.4 nux, nuy errors relative to tracking for convergent iteration")
+plt.xlabel("x (m)")
+plt.ylabel("dnux,dnuy")
+plt.tight_layout()
 plt.show()
+
+print("nuxerror,nuyerror=:\n")
+for j in range(len(nuxerror)):
+    print(nuxerror[j], nuyerror[j])
