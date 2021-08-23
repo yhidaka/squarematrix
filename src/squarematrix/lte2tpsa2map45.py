@@ -210,7 +210,13 @@ def dpmap(mfmadx, deltap, sqmxparameters):
 
     xfix, xpfix = 0, 0
     tmp1 = scipy.optimize.fsolve(
-        fixpoint, (xfix, xpfix), args=(mfmadx, powerindex,), full_output=True
+        fixpoint,
+        (xfix, xpfix),
+        args=(
+            mfmadx,
+            powerindex,
+        ),
+        full_output=True,
     )
     xfix, xpfix = tmp1[0]
     tt1 = [["dpmap, 3", time.time(), time.time() - tt0[0][1]]]
@@ -244,11 +250,11 @@ def dpmap(mfmadx, deltap, sqmxparameters):
 
         # sv('junk',[mftpsa,mfmadx])
         """
-                mftpsa,mfmadx=rl('junk')
-                tmp1=rl('nsls2sr_supercell_ch77_20150406_1_jf1fastmap.dat')
-                mstmp=tmp1[0]
-                mf
-                """
+        mftpsa,mfmadx=rl('junk')
+        tmp1=rl('nsls2sr_supercell_ch77_20150406_1_jf1fastmap.dat')
+        mstmp=tmp1[0]
+        mf
+        """
 
         tmp = rl("nsls2sr_supercell_ch77_20160525_nslice20_nv4_norder7_delta0.pkl")
         # tmp=rl('nsls2sr_supercell_ch77_20150406_1tpsa_jf1fastmap.pkl')
@@ -720,4 +726,3 @@ for deltap in deltaplist:
 plt.show()
 sys.exit(0)
 """
-

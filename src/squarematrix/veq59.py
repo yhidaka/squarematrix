@@ -11,7 +11,8 @@ import pickle
 import copy
 import subprocess
 import pdb
-#from importlib import reload
+
+# from importlib import reload
 
 # import commands
 import numpy as np
@@ -194,13 +195,13 @@ def wwinv(ux0, uy0, Zpar):
     wx = ux0t.composite(
         [zx, zxs, zy, zys]
     )  # w[0] corresponds to u[0].Z as tpsa of x,xp,y,y
-    wxc = ux0t.conjugate(mode='ComplexPair').composite(
+    wxc = ux0t.conjugate(mode="ComplexPair").composite(
         [zx, zxs, zy, zys]
     )  # w[0] corresponds to u[0].Z as tpsa of x,xp,y,y
     wy = uy0t.composite(
         [zx, zxs, zy, zys]
     )  # w[0] corresponds to u[0].Z as tpsa of x,xp,y,y
-    wyc = uy0t.conjugate(mode='ComplexPair').composite(
+    wyc = uy0t.conjugate(mode="ComplexPair").composite(
         [zx, zxs, zy, zys]
     )  # w[0] corresponds to u[0].Z as tpsa of x,xp,y,y
     w = np.array([wx, wxc, wy, wyc])
@@ -601,10 +602,10 @@ def wwJwinvf(uarray, Zpar3, use_existing_tpsa=0):
     # Zpar=bKi,scalex,norder,powerindex
     # 5. Construct w,wc tpsa
     """Hao yue's inverse matrix method:
-        Btw, I just implement the reverse function of a simple case.  In a 4D case (zx, zx*, zy, zy*), we get the polynomial (w0x, w0x*, w0y, w0y*)=w(zx, zx*, zy, zy*), using the following procedure, we can get the inverse polynomials (zx, zx*, zy, zy*)= w^(-1) (w0x, w0x*, w0y, w0y*), so that w^-1(w)=I.
-        The procedure uses the fix point tricks.  First separate the linear part of w out, w=M+N, M is the linear matrix; N is the nonlinear part with zero linear components.
-        Then w_n^(-1)=M^(-1) (1- N(w_(n-1)^(-1))).
-        """
+    Btw, I just implement the reverse function of a simple case.  In a 4D case (zx, zx*, zy, zy*), we get the polynomial (w0x, w0x*, w0y, w0y*)=w(zx, zx*, zy, zy*), using the following procedure, we can get the inverse polynomials (zx, zx*, zy, zy*)= w^(-1) (w0x, w0x*, w0y, w0y*), so that w^-1(w)=I.
+    The procedure uses the fix point tricks.  First separate the linear part of w out, w=M+N, M is the linear matrix; N is the nonlinear part with zero linear components.
+    Then w_n^(-1)=M^(-1) (1- N(w_(n-1)^(-1))).
+    """
     norder_winv = 5
     PyTPSA.initialize(4, norder_winv)
     powerindex_winv = sqdf.powerindex4(norder_winv)
@@ -651,8 +652,8 @@ def vinv_matrix(v1s, v2s, v0norm, winvmtx, norder_winv, powerindex_winv):
 
 # 3. Define functions for analysis
 print("\n in veq52, 3. Define functions for analysis.")
-#from mpl_toolkits.mplot3d import Axes3D
-#from matplotlib.ticker import FormatStrFormatter
+# from mpl_toolkits.mplot3d import Axes3D
+# from matplotlib.ticker import FormatStrFormatter
 
 # 7 define wxp0,wyp0, ux0,uy0,ux1,uy1,ux2,uy2
 
@@ -762,7 +763,7 @@ def vphi(
     tt1 = [["vphi, 2 end", time.time(), time.time() - tt0[0][1]]]
     print(tt1)
     if trackcode == "ELEGANT":
-        with open('beamsddshead', 'w') as f:
+        with open("beamsddshead", "w") as f:
             f.write(_get_beamsddshead_contents())
 
         flnm = open("beamsddstail", "w")
@@ -798,7 +799,7 @@ def vphi(
         flnm.close()
         os.system("cat beamsddshead beamsddstail >beam.sdds")
 
-        with open('tracking_dp_ltefilename.ele', 'w') as f:
+        with open("tracking_dp_ltefilename.ele", "w") as f:
             f.write(_get_tracking_dp_ele_contents())
 
         # print ('in vph, elegant output into junktmp.')
@@ -1148,9 +1149,10 @@ avoidpiby = 1e-6  # avoidpiby is used to rotate the phase of normalized ux to av
 # exactly at phase pi in determining the initial quadrant in phase space of v10.
 # wxp0=np.dot(vph.ux[0],zs0)*np.exp(-1j*avoidpiby), now replaced by v0norm
 
+
 def _get_tracking_dp_ele_contents():
 
-    contents = '''
+    contents = """
 &run_setup
     lattice = "junk.lte",
         p_central_mev = 3000,
@@ -1199,14 +1201,14 @@ def _get_tracking_dp_ele_contents():
 
 &stop &end
 EOF
-    '''
+    """
 
     return contents
 
 
 def _get_beamsddshead_contents():
 
-    beamsddshead_contents = '''SDDS1
+    beamsddshead_contents = """SDDS1
 !# little-endian
 &column name=x, units=m, type=double, &end
 &column name=xp, type=double, &end
@@ -1218,16 +1220,17 @@ def _get_beamsddshead_contents():
 &column name=particleID, type=long, &end
 &data mode=ascii, &end
 !page number 1
-'''
+"""
 
     return beamsddshead_contents
+
 
 def xtracking(xmax, ymax, npass, n_theta, deltap, xfix, xpfix, om1accurate=0):
     # 6. Plot tracking result
     print("\n6. Tracking x,y motion")
 
     if TRACKING_CODE == "ELEGANT":
-        with open('beamsddshead', 'w') as f:
+        with open("beamsddshead", "w") as f:
             f.write(_get_beamsddshead_contents())
 
         flnm = open("beamsddstail", "w")
@@ -1263,7 +1266,7 @@ def xtracking(xmax, ymax, npass, n_theta, deltap, xfix, xpfix, om1accurate=0):
         flnm.close()
         os.system("cat beamsddshead beamsddstail >beam.sdds")
 
-        with open('tracking_dp_ltefilename.ele', 'w') as f:
+        with open("tracking_dp_ltefilename.ele", "w") as f:
             f.write(_get_tracking_dp_ele_contents())
 
         os.system(
@@ -1379,4 +1382,3 @@ def xtracking(xmax, ymax, npass, n_theta, deltap, xfix, xpfix, om1accurate=0):
 
     # return np.array([xd,xpd]),omt, np.array([xacoeffnew,xpnew]),omttracking,np.array(xy), om1naff
     return xy, nuxt, nuyt
-

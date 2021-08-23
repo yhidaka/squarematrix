@@ -111,7 +111,7 @@ def findso(veq, x0, xp0, y0, yp0, v1s0, v2s0, v1s, v2s, acoeff, v0norm, n):
 
 
 def bnmphiCauchyCutoffWithIntrokam(
-    fluc, n_theta, alphadiv, Cauchylimit, applyCauchylimit, dt,
+    fluc, n_theta, alphadiv, Cauchylimit, applyCauchylimit, dt
 ):  # Calculate period T from given phi(t_k), where t_k is only on approximate period T1 on uniformly divided points
     # as described by Section 3B of "compareIntrokamwithme.lyx".
     # x0,xp0,x1,xp1,phi1,av10,thetav10,v10,v11=np.array(fluc)
@@ -261,7 +261,7 @@ def bnmphiCauchyCutoffWithIntrokam(
 
 
 def vthetascan_use_x0dlast3(
-    acoeff, veq, vscaninput, wwJwinv,
+    acoeff, veq, vscaninput, wwJwinv
 ):  # the module "vthetascan previously" is the module "fflucaccurate", see eq.8.1 of "jnf-resonance3.pdf", section 8.
     # For a given initial phi1,phi2, calculate its a,b and initial v10,v20, then scan theta02  to obtain v1,v2 at various rotated actions
 
@@ -566,7 +566,7 @@ def inversefftnew2(bnm1, bnm2, n_theta, v120i):
 
 
 def scalefun(
-    Zs, Vmtx, v1s, v2s, fscale,
+    Zs, Vmtx, v1s, v2s, fscale
 ):  # Equation for z:  v1(z)==v1,v2(z)==v2 , here v1,v2 are fuctions v1x,v3x defined in section 19.2
     tt0 = [["scalefun, 1, start", time.time(), 0]]
     print(tt0)
@@ -2408,8 +2408,10 @@ def plot2DvnTracking(vn, fign=(24, 23)):
 def plot3DzxyvnTracking(xy, bKi, vn, fign=(101, 102, 103, 104)):
     zbar = np.dot(bKi[1:5, 1:5], xy)
     zx, zxs, zy, zys = zbar
-    stlabel = "abs(zx);abs(zy);list(map(cmath.phase, zx));list(map(cmath.phase,zy))".split(
-        ";"
+    stlabel = (
+        "abs(zx);abs(zy);list(map(cmath.phase, zx));list(map(cmath.phase,zy))".split(
+            ";"
+        )
     )
     st1label = "abs(vn[0]);abs(vn[1]);list(map(cmath.phase, vn[0]));list(map(cmath.phase,vn[1]))".split(
         ";"
@@ -2457,4 +2459,3 @@ def plot2DV12xyd0Grid(xyd0, vna, Zpar, fign=(23, 24), label="v10 from xyd0 scan"
     # plt.axes().set_aspect("equal")
     plt.savefig("junk" + str(fign[1]) + ".png")
     return vtmp
-

@@ -14,15 +14,12 @@ import numpy as np
 from numpy import array
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-#import scipy
-#from scipy import loadtxt
 from scipy.interpolate import interp2d
 
 t0 = [["start", time.time(), 0]]
 timing = [["start", time.time(), 0]]
 
 from . import jnfdefinition as jfdf
-#from . import squarematrixdefinition as sqdf
 from . import iterModules59 as vph  # iterModules52 as vph
 from . import lte2tpsa2map45 as lte2tpsa
 from . import (
@@ -291,7 +288,7 @@ def trackingvn(xmax, ymax, vna, Zpar, deltap, xfix, xpfix, npass, lattice):
     xmax, ymax, vna, Zpar, deltap, xfix, xpfix, npass = tmp
 
     xy, nuxt, nuyt = veq.xtracking(
-        xmax, ymax - 0e-6, npass, lattice.n_theta, deltap, xfix, xpfix, om1accurate=0,
+        xmax, ymax - 0e-6, npass, lattice.n_theta, deltap, xfix, xpfix, om1accurate=0
     )  # om1accurate)
     Zse = Zszaray(xy, Zpar)
     vn = np.dot(vna, Zse.transpose())
@@ -757,28 +754,28 @@ for ik in []:  # [0]:
         ","
     )
     vthetascanmsglist = "maxerror,numberdivgence,nfevmean,vthetascanrecord".split(",")
-    #flucfullist = "x0d,xp0d,y0d,yp0d,x1d,xp1d,y1d,yp1d,phi1,phi2,av10,av20,thetav10,thetav20,v10,v20,v11,v21,thetav11,thetav21".split(
-        #","
-    #)
+    # flucfullist = "x0d,xp0d,y0d,yp0d,x1d,xp1d,y1d,yp1d,phi1,phi2,av10,av20,thetav10,thetav20,v10,v20,v11,v21,thetav11,thetav21".split(
+    # ","
+    # )
     # vscaninputlist = "acoeff,Vmtx,dVdXmtx,xydlast,uarray,vna,v120i,n_theta,xi,usexp0dlast,v0norm,bKi,scalex,norder,powerindex,Zpar,findsoparamters".split(
     # ","
     # )
-    #inversevinputlist = "acoeff,Vmtx,dVdXmtx,uarray,vna,v1n,v2n,n_theta,xi,xyd0,v0norm,bKi,scalex,norder,powerindex,Zpar,findsoparamters".split(
-        #","
-    #)
-    #v12nlist = "aphi1,aphi2,bnm1,bnm2,v1n,v2n,vthetascanmsg,F,fv1a,fv2a,v1a,v2a,nux,nuy,acoeffnew,th10,th20,Zsd".split(
-        #","
-    #)
-    #flucbnmlist = "xmax,ymax,xacoeffnew,xacoeff,np.amax(abs(bnm1)),np.amax(abs(bnm2)),np.std(bnm1),np.std(bnm2)".split(
-        #","
-    #)
-    #iorecordlist = "vscaninput,vthetascanmsg,inversevinput,inversev1v2msg".split(",")
-    #bnmoutlist = "xacoeffnew,flucbnm,v120i,acoeff,v0norm,n_theta,xyd0,vna,v12n,xyd,flucful,iorecord,uarray,acoeff0,nvar,xmax,ymax".split(
-        #","
-    #)
-    #renewXinputlist = "xacoeffnew,xmax,ymax,xydlast,uarray,acoeff0,nvar,n_theta,uvar,Zpar,findsoparamters,usexp0dlast".split(
-        #","
-    #)
+    # inversevinputlist = "acoeff,Vmtx,dVdXmtx,uarray,vna,v1n,v2n,n_theta,xi,xyd0,v0norm,bKi,scalex,norder,powerindex,Zpar,findsoparamters".split(
+    # ","
+    # )
+    # v12nlist = "aphi1,aphi2,bnm1,bnm2,v1n,v2n,vthetascanmsg,F,fv1a,fv2a,v1a,v2a,nux,nuy,acoeffnew,th10,th20,Zsd".split(
+    # ","
+    # )
+    # flucbnmlist = "xmax,ymax,xacoeffnew,xacoeff,np.amax(abs(bnm1)),np.amax(abs(bnm2)),np.std(bnm1),np.std(bnm2)".split(
+    # ","
+    # )
+    # iorecordlist = "vscaninput,vthetascanmsg,inversevinput,inversev1v2msg".split(",")
+    # bnmoutlist = "xacoeffnew,flucbnm,v120i,acoeff,v0norm,n_theta,xyd0,vna,v12n,xyd,flucful,iorecord,uarray,acoeff0,nvar,xmax,ymax".split(
+    # ","
+    # )
+    # renewXinputlist = "xacoeffnew,xmax,ymax,xydlast,uarray,acoeff0,nvar,n_theta,uvar,Zpar,findsoparamters,usexp0dlast".split(
+    # ","
+    # )
     iterxydinputlist = (
         "xacoeffnew,xmax,ymax,xydlast,uarray,acoeff0,nvar,n_theta,uvar,Zpar,findsoparamters,usexp0dlast"
     ).split(",")
@@ -806,34 +803,6 @@ for ik in []:  # [0]:
         ","
     )
 
-    #class lattice:
-        #ltefilename = "20140204_bare_1supcell"
-        #usecode = dict(tpsacode="tracy", use_existing_tpsa=1)
-        #nv = 4
-        #norder = 7
-        #deltap = -0.02
-        #n_theta = int(16 / 4) * 4
-        ## alphadiv = int(16 / 4) * 4
-        #ntune = 4
-        #yllim = 0
-        #yulim = 0.1
-        #xllim = -0.51
-        #xulim = 0.51
-        #nvar = 2
-        #acoeff0 = array([[1 + 0j, 0j], [0j, 1 + 0j]])
-        #npass = 800
-        #uselastxyd = "never"
-        ##'no inversev'#'use xydlast for vthetascan trial for ik>0'#'use xydlast after only one vthetascan'#'never',#
-        #v0norm = (1, 1)
-        #Cauchylimit = {
-            #"Cauchylim": [20 / 30, 4, 20 / 30, 4],  # "Cauchylim": [a1, b1,a2,b2]
-            #"aliasingCutoff": 8,
-        #}
-        #mod_prop_dict_list = []
-        ## mod_prop_dict_list=[
-        ##    {"elem_name": "Qh1G2c30a", "prop_name": "K1", "prop_val": 1.5},
-        ##    {"elem_name": "sH1g2C30A", "prop_name": "K2", "prop_val": 0.0},
-        ## ],
     lattice = _get_default_lattice_namespace()
 
 
@@ -936,30 +905,6 @@ def renewX(
     # v_theta scan ####################################################
     for run_vthetascan in [1]:
         # print("in renewX,acoeff=", acoeff, 'eval("acoeff")=', eval("acoeff"))
-        #vscaninput = dict(
-            #zip(
-                #vscaninputlist,
-                #[
-                    #acoeff,
-                    #Vmtx,
-                    #dVdXmtx,
-                    #xydlast,
-                    #uarray,
-                    #vna,
-                    #v120i,
-                    #n_theta,
-                    #xi,
-                    #usexp0dlast,
-                    #v0norm,
-                    #lattice.bKi,
-                    #lattice.scalex,
-                    #lattice.norder,
-                    #lattice.powerindex,
-                    #Zpar3,
-                    #findsoparamters,
-                #],
-            #)
-        #)
         vscaninput = dict(
             acoeff=acoeff,
             Vmtx=Vmtx,
@@ -1025,33 +970,6 @@ def renewX(
         ) = veq.vphi(xyd0, acoeff, uvar, v0norm, oneturntpsa, Vmtx, outxv=1)
         tt1 = [["in bnm, 2.1 vphi", time.time(), time.time() - tt1[0][1]]]
         print("tt1=", tt1)
-        #flucful = dict(
-            #zip(
-                #flucfullist,
-                #[
-                    #x0d,
-                    #xp0d,
-                    #y0d,
-                    #yp0d,
-                    #x1d,
-                    #xp1d,
-                    #y1d,
-                    #yp1d,
-                    #phi1,
-                    #phi2,
-                    #av10,
-                    #av20,
-                    #thetav10,
-                    #thetav20,
-                    #v10,
-                    #v20,
-                    #v11,
-                    #v21,
-                    #thetav11,
-                    #thetav21,
-                #],
-            #)
-        #)
         flucful = dict(
             x0d=x0d,
             xp0d=xp0d,
@@ -1103,30 +1021,6 @@ def renewX(
             bnm1, bnm2, n_theta, v120i
         )  # thetav10 is the angle of the rigid rotation v10, as the zeroth order approximation.
         timing.append(["3. inversefftnew2", time.time(), time.time() - timing[-1][1]])
-        #inversevinput = dict(
-            #zip(
-                #inversevinputlist,
-                #[
-                    #acoeff,
-                    #Vmtx,
-                    #dVdXmtx,
-                    #uarray,
-                    #vna,
-                    #v1n,
-                    #v2n,
-                    #n_theta,
-                    #xi,
-                    #xyd0,
-                    #v0norm,
-                    #lattice.bKi,
-                    #lattice.scalex,
-                    #lattice.norder,
-                    #lattice.powerindex,
-                    #Zpar3,
-                    #findsoparamters,
-                #],
-            #)
-        #)
         inversevinput = dict(
             acoeff=acoeff,
             Vmtx=Vmtx,
@@ -1171,7 +1065,7 @@ def renewX(
 
     try:
         acoeffnew = vph.anew12(
-            F, nux, nuy, nvar, n_theta, lattice.Cauchylimit, lattice.ntune,
+            F, nux, nuy, nvar, n_theta, lattice.Cauchylimit, lattice.ntune
         )
     except Exception as err:
         print(dir(err))
@@ -1189,56 +1083,16 @@ def renewX(
         tt1 = [["in bnm 8 ", time.time(), time.time() - tt1[0][1]]]
         print("tt1=", tt1)
         bnm1tmp[0, 0], bnm2tmp[0, 0] = 0, 0
-        #flucbnm = dict(
-            #zip(
-                #flucbnmlist,
-                #[
-                    #xmax,
-                    #ymax,
-                    #xacoeffnew,
-                    #xacoeff,
-                    #np.amax(abs(bnm1tmp)),
-                    #np.amax(abs(bnm2tmp)),
-                    #np.std(bnm1tmp),
-                    #np.std(bnm2tmp),
-                #],
-            #)
-        #)
         flucbnm = {
-            'xmax': xmax,
-            'ymax': ymax,
-            'xacoeffnew': xacoeffnew,
-            'xacoeff': xacoeff,
-            'np.amax(abs(bnm1))': np.amax(abs(bnm1tmp)),
-            'np.amax(abs(bnm2))': np.amax(abs(bnm2tmp)),
-            'np.std(bnm1)': np.std(bnm1tmp),
-            'np.std(bnm2)': np.std(bnm2tmp),
+            "xmax": xmax,
+            "ymax": ymax,
+            "xacoeffnew": xacoeffnew,
+            "xacoeff": xacoeff,
+            "np.amax(abs(bnm1))": np.amax(abs(bnm1tmp)),
+            "np.amax(abs(bnm2))": np.amax(abs(bnm2tmp)),
+            "np.std(bnm1)": np.std(bnm1tmp),
+            "np.std(bnm2)": np.std(bnm2tmp),
         }
-        #v12n = dict(
-            #zip(
-                #v12nlist,
-                #[
-                    #aphi1,
-                    #aphi2,
-                    #bnm1,
-                    #bnm2,
-                    #v1n,
-                    #v2n,
-                    #vthetascanmsg,
-                    #F,
-                    #fv1a,
-                    #fv2a,
-                    #v1a,
-                    #v2a,
-                    #nux,
-                    #nuy,
-                    #acoeffnew,
-                    #th10,
-                    #th20,
-                    #Zsdx,
-                #],
-            #)
-        #)
         v12n = dict(
             aphi1=aphi1,
             aphi2=aphi2,
@@ -1259,41 +1113,12 @@ def renewX(
             th20=th20,
             Zsd=Zsdx,
         )
-        #iorecord = dict(
-            #zip(
-                #iorecordlist, [vscaninput, vthetascanmsg, inversevinput, inversev1v2msg]
-            #)
-        #)
         iorecord = dict(
             vscaninput=vscaninput,
             vthetascanmsg=vthetascanmsg,
             inversevinput=inversevinput,
             inversev1v2msg=inversev1v2msg,
         )
-        #bnmout = dict(
-            #zip(
-                #bnmoutlist,
-                #[
-                    #xacoeffnew,
-                    #flucbnm,
-                    #v120i,
-                    #acoeff,
-                    #v0norm,
-                    #n_theta,
-                    #xyd0,
-                    #vna,
-                    #v12n,
-                    #xyd,
-                    #flucful,
-                    #iorecord,
-                    #uarray,
-                    #acoeff0,
-                    #nvar,
-                    #xmax,
-                    #ymax,
-                #],
-            #)
-        #)
         bnmout = dict(
             xacoeffnew=xacoeffnew,
             flucbnm=flucbnm,
@@ -1611,9 +1436,7 @@ def plotxacoeffnewconvergence(arecord, xc=-20e-3):
         tmp3 = [i for i in tmp2[0] if abs(i - xc) < 1e-6]
         maxx = np.max(tmp3)
         minx = np.min(tmp3)
-        plt.axis(
-            [minx, maxx, np.min(tmp2[1]) - 1, np.max(tmp2[1]) + 1,]
-        )
+        plt.axis([minx, maxx, np.min(tmp2[1]) - 1, np.max(tmp2[1]) + 1])
         plt.xlabel(
             "xmax=-19mm + (number of iteration on both xacoeffnew and xyd times 1e-9) "
         )
@@ -2287,14 +2110,6 @@ def init_tpsa(
         # uvarlist = "bKi,scalex,norder_jordan,powerindex,xfix,xpfix,deltap".split(",")
 
         # uvar = [eval("lattice." + i) for i in uvarlist]
-        #class uvar:
-            #bKi = lattice.bKi
-            #scalex = lattice.scalex
-            #norder_jordan = lattice.norder_jordan
-            #powerindex = lattice.powerindex
-            #xfix = lattice.xfix
-            #xpfix = lattice.xpfix
-            #deltap = lattice.deltap
         uvar = SimpleNamespace(
             bKi=lattice.bKi,
             scalex=lattice.scalex,
@@ -2312,25 +2127,6 @@ def init_tpsa(
         usexp0dlast = 0
         xydlast = np.zeros([4, n_theta ** 2])
 
-    #renewXinput = dict(
-        #zip(
-            #renewXinputlist,
-            #[
-                #xacoeff0,
-                #xmax,
-                #ymax,
-                #xydlast,
-                #uarray,
-                #acoeff0,
-                #lattice.nvar,
-                #n_theta,
-                #uvar,
-                #Zpar3,
-                #findsoparamters,
-                #usexp0dlast,
-            #],
-        #)
-    #)
     renewXinput = dict(
         xacoeffnew=xacoeff0,
         xmax=xmax,

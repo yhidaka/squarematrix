@@ -166,9 +166,9 @@ def _tps_cell_pass(
         if is_phase_space:
 
             if nv == 4:
-                var_names = ['x', 'px', 'y', 'py']
+                var_names = ["x", "px", "y", "py"]
             elif nv == 5:
-                var_names = ['x', 'px', 'y', 'py', 'dp']
+                var_names = ["x", "px", "y", "py", "dp"]
             else:
                 raise NotImplementedError('"nv" must be 4 or 5.')
             assert len(var_names) == nv
@@ -180,12 +180,12 @@ def _tps_cell_pass(
             dp = TPS(var_names, norder, safe_mult=safe_mult)
             ct = TPS(var_names, norder, safe_mult=safe_mult)
             #
-            x.set_to_var('x')
-            px.set_to_var('px')
-            y.set_to_var('y')
-            py.set_to_var('py')
+            x.set_to_var("x")
+            px.set_to_var("px")
+            y.set_to_var("y")
+            py.set_to_var("py")
             if nv == 5:
-                dp.set_to_var('dp')
+                dp.set_to_var("dp")
             else:
                 if dp0 != 0.0:
                     dp += dp0
@@ -194,9 +194,9 @@ def _tps_cell_pass(
         else:  # pass in trace space (x, x', y, y')
 
             if nv == 4:
-                var_names = ['x', 'xp', 'y', 'yp']
+                var_names = ["x", "xp", "y", "yp"]
             elif nv == 5:
-                var_names = ['x', 'xp', 'y', 'yp', 'dp']
+                var_names = ["x", "xp", "y", "yp", "dp"]
             else:
                 raise NotImplementedError('"nv" must be 4 or 5.')
             assert len(var_names) == nv
@@ -208,12 +208,12 @@ def _tps_cell_pass(
             dp = TPS(var_names, norder, safe_mult=safe_mult)
             ct = TPS(var_names, norder, safe_mult=safe_mult)
             #
-            x.set_to_var('x')
-            xp.set_to_var('xp')
-            y.set_to_var('y')
-            yp.set_to_var('yp')
+            x.set_to_var("x")
+            xp.set_to_var("xp")
+            y.set_to_var("y")
+            yp.set_to_var("yp")
             if nv == 5:
-                dp.set_to_var('dp')
+                dp.set_to_var("dp")
             else:
                 if dp0 != 0.0:
                     dp += dp0
@@ -261,7 +261,7 @@ def _tps_cell_pass(
     ncells = len(pass_func_list)
     v = [x, px, y, py, dp, ct]
     for i, func in enumerate(pass_func_list):
-        print(f'#{i+1:d} / {ncells:d}')
+        print(f"#{i+1:d} / {ncells:d}")
         if func.func is Mpole_Pass:
             # print('Mpole_Pass')
             mcount += 1
@@ -377,8 +377,7 @@ def Mpole_Pass(cell, x):
 
 
 def GtoL(X, S, R, c0, c1, s1):
-    """
-    """
+    """ """
 
     # Simplified rotated p_rot
     X[px_] += c1
@@ -599,7 +598,7 @@ def get_p_s(x):
             if p_s2 >= 0.0:
                 p_s = np.sqrt(p_s2)
             else:
-                print('get_p_s(): *** Speed of light exceeded!\n')
+                print("get_p_s(): *** Speed of light exceeded!\n")
                 p_s = np.nan
 
     return p_s
@@ -685,14 +684,14 @@ def get_pass_funcs_from_pylatt(pylatt_obj, nslice=4):
             else:
                 raise NotImplementedError
 
-            flat_file_elem_def_str = f'''
+            flat_file_elem_def_str = f"""
             {elem.name}                 {fnum}    {knum}    {elem_index}
               {kind}   {method}   {nslice}
              -1.0000000000000000e+01  1.0000000000000000e+01 -1.0000000000000000e+01  1.0000000000000000e+01
              {dS_x:.16e}  {dS_y:.16e}  {PdTpar:.16e}  {dTerror:.16e}
              {elem.L:.16e}  {Pirho:.16e}  {PTx1:.16e}  {PTx2:.16e}  {Pgap:.16e}
                  {nmpole}  {n_design}
-            '''
+            """
             for _n, ba_d in bn_an.items():
                 flat_file_elem_def_str += f' {_n}  {ba_d["b"]:.16e}  {ba_d["a"]:.16e}\n'
 
@@ -724,83 +723,83 @@ def get_pass_funcs_from_ltemanager(LTE_obj, N_KICKS=None, mod_prop_dict_list=Non
     # d = LTE.get_used_beamline_element_defs(used_beamline_name=LTE.used_beamline_name)
 
     elem_defs = {}
-    for elem_name, elem_type, prop_str in d['elem_defs']:
-        elem_defs[elem_name] = {'elem_type': elem_type}
+    for elem_name, elem_type, prop_str in d["elem_defs"]:
+        elem_defs[elem_name] = {"elem_type": elem_type}
         elem_defs[elem_name].update(LTE.parse_elem_properties(prop_str))
 
     # Convert pylatt lattice into a list of ppytracy's element pass functions
     pass_funcs = []
     spos = 0.0
-    for elem_name in d['flat_used_elem_names']:
+    for elem_name in d["flat_used_elem_names"]:
         elem = elem_defs[elem_name]
-        elem_type = elem['elem_type']
+        elem_type = elem["elem_type"]
 
-        if elem_type in ('DRIF', 'KICK', 'HKICK', 'VKICK', 'EDRIFT'):
+        if elem_type in ("DRIF", "KICK", "HKICK", "VKICK", "EDRIFT"):
 
-            pass_funcs.append(partial(Drift, elem.get('L', 0.0)))
+            pass_funcs.append(partial(Drift, elem.get("L", 0.0)))
 
-        elif elem_type in ('CSBEND', 'KQUAD', 'KSEXT', 'KOCT'):
+        elif elem_type in ("CSBEND", "KQUAD", "KSEXT", "KOCT"):
 
             fnum = knum = elem_index = 1
             kind, method, nslice = 1, 4, N_KICKS.get(elem_type, 20)
             dS_x = dS_y = PdTpar = dTerror = 0.0
             Pirho = PTx1 = PTx2 = Pgap = 0.0
-            L = elem.get('L', 0.0)
+            L = elem.get("L", 0.0)
             # "nmpole" refers to the number of defined multipole component strength values
-            if elem_type == 'CSBEND':
-                Pirho = elem['ANGLE'] / L
-                PTx1 = np.rad2deg(elem.get('E1', 0.0))
-                PTx2 = np.rad2deg(elem.get('E2', 0.0))
+            if elem_type == "CSBEND":
+                Pirho = elem["ANGLE"] / L
+                PTx1 = np.rad2deg(elem.get("E1", 0.0))
+                PTx2 = np.rad2deg(elem.get("E2", 0.0))
                 n_design = 1
-                if elem.get('K1', 0.0) == 0.0:
+                if elem.get("K1", 0.0) == 0.0:
                     bn_an = {}
                     nmpole = 0
                 else:
-                    bn_an = {2: dict(b=elem.get('K1', 0.0), a=0.0)}
+                    bn_an = {2: dict(b=elem.get("K1", 0.0), a=0.0)}
                     nmpole = 1
-            elif elem_type == 'KQUAD':
+            elif elem_type == "KQUAD":
                 nmpole = 1
                 n_design = 2
-                bn_an = {2: dict(b=elem.get('K1', 0.0), a=0.0)}
+                bn_an = {2: dict(b=elem.get("K1", 0.0), a=0.0)}
             # elif type(elem) is lattice.latt.skew:
             # nmpole = 1
             # n_design = 2
             # bn_an = {2: dict(b=0.0, a=elem.K1)}
-            elif elem_type == 'KSEXT':
+            elif elem_type == "KSEXT":
                 nmpole = 1
                 n_design = 3
                 bn_an = {
-                    3: dict(b=elem.get('K2', 0.0) / 2, a=0.0)
+                    3: dict(b=elem.get("K2", 0.0) / 2, a=0.0)
                 }  # 2! difference between ELEGANT/MAD & Tracy/AT
-            elif elem_type == 'KOCT':
+            elif elem_type == "KOCT":
                 nmpole = 1
                 n_design = 4
                 bn_an = {
-                    4: dict(b=elem.get('K3', 0.0) / 6, a=0.0)
+                    4: dict(b=elem.get("K3", 0.0) / 6, a=0.0)
                 }  # 3! difference between ELEGANT/MAD & Tracy/AT
             else:
                 raise NotImplementedError
 
-            flat_file_elem_def_str = f'''
+            flat_file_elem_def_str = f"""
             {elem_name}                 {fnum}    {knum}    {elem_index}
               {kind}   {method}   {nslice}
              -1.0000000000000000e+01  1.0000000000000000e+01 -1.0000000000000000e+01  1.0000000000000000e+01
              {dS_x:.16e}  {dS_y:.16e}  {PdTpar:.16e}  {dTerror:.16e}
              {L:.16e}  {Pirho:.16e}  {PTx1:.16e}  {PTx2:.16e}  {Pgap:.16e}
                  {nmpole}  {n_design}
-            '''
+            """
             for _n, ba_d in bn_an.items():
                 flat_file_elem_def_str += f' {_n}  {ba_d["b"]:.16e}  {ba_d["a"]:.16e}\n'
 
             elem_index, cell = get_elem_index_and_cell(flat_file_elem_def_str)
             pass_funcs.append(partial(Mpole_Pass, cell))
 
-        elif elem_type in ('KICK', 'MONI', 'MALIGN', 'WATCH', 'MARK', 'MULT'):
+        elif elem_type in ("KICK", "MONI", "MALIGN", "WATCH", "MARK", "MULT"):
             pass
         else:
             raise NotImplementedError((elem_name, elem_type))
 
-        spos += elem.get('L', 0.0)
+        spos += elem.get("L", 0.0)
 
         if False:
             try:
@@ -816,8 +815,8 @@ def get_elem_index_and_cell(flat_file_elem_def_str):
 
     lines = [
         line.strip()
-        for line in flat_file_elem_def_str.split('\n')
-        if line.strip() != ''
+        for line in flat_file_elem_def_str.split("\n")
+        if line.strip() != ""
     ]
     iLine = 0
 
@@ -829,7 +828,7 @@ def get_elem_index_and_cell(flat_file_elem_def_str):
     cell.dS = [0.0, 0.0]
     cell.dT = [1.0, 0.0]
 
-    tokens = [s.strip() for s in lines[iLine].split() if s.strip() != '']
+    tokens = [s.strip() for s in lines[iLine].split() if s.strip() != ""]
     iLine += 1
 
     Elem.PName = tokens[0]
@@ -837,7 +836,7 @@ def get_elem_index_and_cell(flat_file_elem_def_str):
     Elem.Knum = int(tokens[2])
     elem_index = int(tokens[3])
 
-    kind, method, n = [int(s.strip()) for s in lines[iLine].split() if s.strip() != '']
+    kind, method, n = [int(s.strip()) for s in lines[iLine].split() if s.strip() != ""]
     iLine += 1
 
     if kind == 1:
@@ -877,7 +876,7 @@ def get_elem_index_and_cell(flat_file_elem_def_str):
         cell.maxampl[X_][1],
         cell.maxampl[Y_][0],
         cell.maxampl[Y_][1],
-    ) = [float(s.strip()) for s in lines[iLine].split() if s.strip() != '']
+    ) = [float(s.strip()) for s in lines[iLine].split() if s.strip() != ""]
     iLine += 1
 
     Elem.PL = 0.0  # default
@@ -888,14 +887,14 @@ def get_elem_index_and_cell(flat_file_elem_def_str):
 
         if M.Pthick == ThickType.thick:
             cell.dS[X_], cell.dS[Y_], M.PdTpar, dTerror = [
-                float(s.strip()) for s in lines[iLine].split() if s.strip() != ''
+                float(s.strip()) for s in lines[iLine].split() if s.strip() != ""
             ]
             iLine += 1
             cell.dT[X_] = np.cos(np.deg2rad(dTerror + M.PdTpar))
             cell.dT[Y_] = np.sin(np.deg2rad(dTerror + M.PdTpar))
 
             Elem.PL, M.Pirho, M.PTx1, M.PTx2, M.Pgap = [
-                float(s.strip()) for s in lines[iLine].split() if s.strip() != ''
+                float(s.strip()) for s in lines[iLine].split() if s.strip() != ""
             ]
             iLine += 1
 
@@ -913,12 +912,12 @@ def get_elem_index_and_cell(flat_file_elem_def_str):
         M.Ps1 = np.sin(np.deg2rad(M.PdTpar)) * M.Pc0
 
         nmpole, M.n_design = [
-            int(s.strip()) for s in lines[iLine].split() if s.strip() != ''
+            int(s.strip()) for s in lines[iLine].split() if s.strip() != ""
         ]
         iLine += 1
 
         for j in range(1, nmpole + 1):
-            tokens = [s.strip() for s in lines[iLine].split() if s.strip() != '']
+            tokens = [s.strip() for s in lines[iLine].split() if s.strip() != ""]
             iLine += 1
 
             n = int(tokens[0])

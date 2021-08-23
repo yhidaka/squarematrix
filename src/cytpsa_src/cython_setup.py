@@ -11,7 +11,7 @@ from Cython.Build import cythonize
 
 setup(
     ext_modules=cythonize("cytpsa.pyx"),
-    author='Yoshiteru Hidaka',
-    maintainer='Yoshiteru Hidaka',
-    maintainer_email='yhidaka@bnl.gov',
+    author="Yoshiteru Hidaka",
+    maintainer="Yoshiteru Hidaka",
+    maintainer_email="yhidaka@bnl.gov",
 )

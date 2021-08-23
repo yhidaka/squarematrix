@@ -63,7 +63,7 @@ def tm(f, g, powerindex, norder):
 
 def mfunction(m, norder):
     """generate submatrix matrix function mf for map m up to norder
-        which is an array with 4 rows of tps representing x,xp,y,yp in terms of x0,xp0,y0,yp0"""
+    which is an array with 4 rows of tps representing x,xp,y,yp in terms of x0,xp0,y0,yp0"""
     pv, x, od = m.dump(0)
     pv, xp, od = m.dump(1)
     pv, y, od = m.dump(2)
@@ -199,7 +199,7 @@ def BKmatrix(
     ln = len(powerindex)
     bf = array(
         [
-            [1.0, 0, 0, 0, 0,],
+            [1.0, 0, 0, 0, 0],
             [x0, np.sqrt(betax0), 0, 0, 0],
             [xp0, -alphax0 / np.sqrt(betax0), 1.0 / np.sqrt(betax0), 0, 0],
             [0, 0, 0, np.sqrt(betay0), 0],
@@ -211,7 +211,7 @@ def BKmatrix(
     # build map matrix for K. see my notes "Relation to Normal Form", Wednesday, March 30, 2011 1:59 PM, section "definition"
     Kf = array(
         [
-            [1.0, 0, 0, 0, 0,],
+            [1.0, 0, 0, 0, 0],
             [0, 1.0 / 2, 1.0 / 2, 0, 0],
             [0, 1j / 2, -1j / 2, 0, 0],
             [0, 0, 0, 1.0 / 2, 1.0 / 2],
@@ -368,9 +368,7 @@ def contourplot(
     if aspect1 == "True":
         plt.axes("equal")
     # if aspect1=='True': plt.axes().set_aspect('equal', 'datalim')
-    plt.axis(
-        [xlim[0], xlim[1], ylim[0], ylim[1],]
-    )
+    plt.axis([xlim[0], xlim[1], ylim[0], ylim[1]])
     # plt.show()
     return
 
@@ -519,4 +517,3 @@ def b0z(zbar, zbars, scalex, norder, powerindex, u):
         u[0], Zs
     )  # w is the invariant we denoted as b0 before. Zs is scaled Z, Z is column of zbar, zbars
     return W
-

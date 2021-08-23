@@ -129,7 +129,7 @@ def nuxvzx(
 ):  # just give k vs. xmax, ymax
     x_iter_lndxy, xset, cutoff = plot3Dxydconvergence(arecord, plot3d=False)
     xset, convergencerate, arminidx, idxminlist, diverge = scanmin(
-        x_iter_lndxy, xset, cutoff, diverge_condition=diverge_condition,
+        x_iter_lndxy, xset, cutoff, diverge_condition=diverge_condition
     )
     idx = [j for j, i in enumerate(convergencerate) if not np.isnan(i)]
     convergencerate = np.array(convergencerate)[idx]
@@ -321,9 +321,7 @@ def nuxvzx(
                     label="tracking lost particle, npass=" + str(npass),
                 )
             if len(nlossnan) > 0:
-                plt.plot(
-                    nlossnan[3], nlossnan[2], "yx",
-                )
+                plt.plot(nlossnan[3], nlossnan[2], "yx")
             plt.legend(loc="best", prop={"size": 6})
             plt.savefig("junk3.png")
         else:
@@ -483,9 +481,7 @@ def plot1Dxydconvergence_from_3Ddata(arecord, xc=-21.0e-3, label=True):
     z1 = np.array(z)[idx]
     plt.figure(140)
     if len(z1) != 0:
-        plt.plot(
-            z1, "o", label="x=" + str(xc) + "\n one tunr map:tpsa",
-        )
+        plt.plot(z1, "o", label="x=" + str(xc) + "\n one tunr map:tpsa")
     if label:
         plt.legend(loc="best", prop={"size": 16})
     plt.xlabel("iteration number", fontsize=20)
@@ -626,18 +622,14 @@ def survival_turn(arecord, npass=65536):
         sv("junknturn", nturn_record_data)
     plt.figure(131)
     for nturn in nturn_record_data:
-        plt.plot(
-            nturn[0], nturn[1], "o",
-        )
+        plt.plot(nturn[0], nturn[1], "o")
     plt.legend(loc="best")
     plt.title("Fig.131 npass=" + str(nturn[2][-1]))
     plt.ylabel("number  of survival turns vs. x")
     plt.savefig("junk131.png")
     plt.figure(132)
     for nturn in nturn_record_data:
-        plt.plot(
-            np.mean(nturn[0]), np.mean(nturn[1]), "o",
-        )
+        plt.plot(np.mean(nturn[0]), np.mean(nturn[1]), "o")
     plt.title("Fig.132 npass=" + str(nturn[2][-1]))
     plt.ylabel("number  of mean turn vs. x")
     plt.legend(loc="best")
@@ -890,7 +882,7 @@ def plotDA(
         color="red",
     )
     plt.axvline(
-        x=x_last_convergence, label="point iteration still converges", color="cyan",
+        x=x_last_convergence, label="point iteration still converges", color="cyan"
     )
     plt.legend(loc="lower left", handlelength=1, handleheight=1, prop={"size": 9})
     if type(cutoff) == int:
@@ -913,7 +905,7 @@ def plotDA(
     plt.figure(145)
     x_conv_div_list = list(zip(*x_conv_div_list))
     plt.plot(
-        x_list, conv_div_list, "-", label="nth1,nth2=" + str(nth1) + "," + str(nth2),
+        x_list, conv_div_list, "-", label="nth1,nth2=" + str(nth1) + "," + str(nth2)
     )
     plt.plot(x_conv_div_list[0], x_conv_div_list[1], "o")
     plt.xlabel("x (m)")
@@ -1029,13 +1021,11 @@ def example2(ar):
     lt53.showarecord(ar[103])
 
 
-def example3(
-    ar, xall=[],  # np.arange(-17.47e-3, -17.51e-3, -0.001e-3),
-):
+def example3(ar, xall=[]):  # np.arange(-17.47e-3, -17.51e-3, -0.001e-3),
     tt0 = [["nuxvzx start", time.time(), 0]]
     print(tt0)
     idxminlist, convergencerate, nux, nuy, diverge = nuxvzx(
-        ar, tracking=True, npass=800, xall=xall,
+        ar, tracking=True, npass=800, xall=xall
     )  # False)  # True)  #
     tt1 = [["nuxvzx end", time.time(), time.time() - tt0[0][1]]]
     print(tt0)
@@ -1790,7 +1780,7 @@ def find_minimum_converge(
 
 
 def find_first_converge(
-    x=-2e-3, y=14e-3, ntheta_lim=10, init_tpsa_output=None,  # init_tpsa_output
+    x=-2e-3, y=14e-3, ntheta_lim=10, init_tpsa_output=None  # init_tpsa_output
 ):
     # ar,ntheta=find_first_converge(x=-4e-3, y=14e-3, ntheta_lim=10)
     # lt53.plot1Dtheta_vs_xydconvergence_from_3Ddata(ar, n_theta=ntheta, plot130=True)
@@ -1929,16 +1919,13 @@ def ar2_scanx(ntheta=12, y=4e-3, ar2_iter_number=12, n_theta_cutoff_ratio=(1, 0)
     ar2 = []
     for x in np.arange(-1.0e-3, -28.1e-3, -1e-3):
         try:
-            ar2 = (
-                ar2
-                + ar2_xyntheta(
-                    x,
-                    y,
-                    ntheta,
-                    xyntheta_scan_input=xyntheta_scan_input,
-                    init_tpsa_output=init_tpsa_output,
-                )[1]
-            )
+            ar2 = ar2 + ar2_xyntheta(
+                x,
+                y,
+                ntheta,
+                xyntheta_scan_input=xyntheta_scan_input,
+                init_tpsa_output=init_tpsa_output,
+            )[1]
         except Exception as err:
             print(dir(err))
             print(err.args)
@@ -1994,17 +1981,14 @@ def ar2_scan_n_theta(
     ar2 = []
     for ntheta in range(4, ntheta_lim):
         try:
-            ar2 = (
-                ar2
-                + ar2_xyntheta(
-                    x,
-                    y,
-                    ntheta,
-                    xyntheta_scan_input=xyntheta_scan_input,
-                    init_tpsa_output=init_tpsa_output,
-                    scantype="including first iteration",
-                )[1]
-            )
+            ar2 = ar2 + ar2_xyntheta(
+                x,
+                y,
+                ntheta,
+                xyntheta_scan_input=xyntheta_scan_input,
+                init_tpsa_output=init_tpsa_output,
+                scantype="including first iteration",
+            )[1]
         except Exception as err:
             print(dir(err))
             print(err.args)
@@ -2014,7 +1998,7 @@ def ar2_scan_n_theta(
     lt53.plot1Dtheta_vs_xydconvergence_from_3Ddata(ar2, n_theta=17, plot130=True)
     # lt53.plot1Dtheta_vs_xacoeffnewconvergence_from_3Ddata(ar2, n_theta=17, plot131=True)
     thetaset, minzlist, arminidx, idxminlist, diverge = scanmin(
-        x_iter_lndxy, n_thetaset, cutoff, plotscmain="lndxy vs nth", scantype=scantype,
+        x_iter_lndxy, n_thetaset, cutoff, plotscmain="lndxy vs nth", scantype=scantype
     )
     plt.tight_layout()
     tt1 = [["scan_ntheta end", time.time(), time.time() - tt0[0][1]]]

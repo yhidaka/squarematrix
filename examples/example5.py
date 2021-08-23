@@ -30,7 +30,11 @@ init_tpsa_input = dict(
     deltap=-0.025,
     ltefilename="20140204_bare_1supcell",  # "nsls2sr_supercell_ch77_20150406_1",  # 20140204_bare_1supcell",
     mod_prop_dict_list=[
-        {"elem_name": "Qh1G2c30a", "prop_name": "K1", "prop_val": -0.6419573146484081,},
+        {
+            "elem_name": "Qh1G2c30a",
+            "prop_name": "K1",
+            "prop_val": -0.6419573146484081,
+        },
         {
             "elem_name": "sH1g2C30A",
             "prop_name": "K2",
