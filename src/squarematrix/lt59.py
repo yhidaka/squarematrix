@@ -921,12 +921,23 @@ def plotDA(
     plt.savefig("junk145.png")
     plt.show()
 
+def area(vs):
+    a = 0
+    x0,y0 = vs[0]
+    for [x1,y1] in vs[1:]:
+        dx = x1-x0
+        dy = y1-y0
+        a += 0.5*(y0*dx - x0*dy)
+        x0 = x1
+        y0 = y1
+    return a
 
 def plotxyz(
     xset,
     yset,
     minzlist,
-    dlow=-30,
+    diff_lvl=None,
+    dlow=-16,
     dhi=0,
     plotfilename="",
     xlabel="x (m)",
@@ -935,8 +946,16 @@ def plotxyz(
     + r"$ \ln(|X_n-X_{n-1}|_{rms}))$"
     + "\nfor all iteration number n ",
     markersize=50,
-    figsize=(12, 4),
+    figsize=(7, 5),
 ):
+    if diff_lvl is None:
+        diff_lvl = [-8]
+        
+    import matplotlib as mtb
+    mtb.style.use('classic')
+    plt.rcParams['font.family'] = 'Times New Roman'
+    from scipy.interpolate import griddata
+        
     # plot x-xp distribution with spectrum of energy as colorbar(linewidth thin to have thin circle, pickradius gives dot size)
     # plt.subplot(111)
     # fig = plt.figure(146)
@@ -951,22 +970,43 @@ def plotxyz(
         vmin=dlow,
         vmax=dhi,
         cmap=cm.jet,
-        linewidths=0.1,
-        pickradius=0.5,
+        linewidths=0.0,
+        pickradius=0.1,
     )
     p = plt.colorbar()
     p.ax.set_ylabel(spectrallabel, fontsize=20)
+    xi = np.linspace(min(xset), max(xset), 1000)
+    yi = np.linspace(min(yset), max(yset), 1000)
+    zi = griddata((xset, yset), minzlist, (xi[None,:], yi[:,None]), method='linear')
+    lvls=diff_lvl
+    cp=plt.contour(xi, yi, zi, levels=lvls,colors=['k'],linestyles='solid')
+    #plt.clabel(cp, inline=1,fontsize=5, colors=['k','k','k','k','k'])
+    contour = cp.collections[0]
+    vs = contour.get_paths()[0].vertices
+    a = area(vs)
+    print('area under within the specified diffusion level = ', a)
+    '''
+    # Get one of the contours from the plot.
+    for i in range(len(lvls)):
+        contour = cp.collections[i]
+        vs = contour.get_paths()[0].vertices
+        # Compute area enclosed by vertices.
+        a = area(vs)
+        print("r = " + str(lvls[i]) + ": a =" + str(a))
+    '''
+    #plt.contour(xset,yset,minzlist,color='k')
     plt.xlabel(xlabel, fontsize=20)
     plt.ylabel(ylabel, fontsize=20)
-    plt.title("Fig.146 Minimum of convergence per iteration")
-    plt.title("")
+    plt.title("Map from Convergence Diagram")
     plt.grid(True)
     plt.axis([np.min(xset), np.max(xset), np.min(yset), np.max(yset)])
+    plt.tight_layout()
     plt.savefig("junk146.png")
     # plt.show()
     # plt.savefig(plotfilename)
     # plt.close()
-    return fig
+    
+    return dict(fig=fig, a=a)
 
 
 # ar, ar2=example6(
