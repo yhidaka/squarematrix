@@ -399,7 +399,7 @@ def gettpsa(
                         ltefilename_saved,
                     )
                     print("deltap=", deltap, "deltap_saved=", deltap_saved)
-                    sys.exit(0)
+                    raise RuntimeError
                 oneturntpsa = PyTPSA.load("oneturntpsa_yue_saved")
 
             mfmadx = mfmadx_yue

@@ -921,16 +921,104 @@ def plotDA(
     plt.savefig("junk145.png")
     plt.show()
 
-def area(vs):
+
+def area_2dpolygon(vs):
+    """Implemented by F. Plassard"""
     a = 0
-    x0,y0 = vs[0]
-    for [x1,y1] in vs[1:]:
-        dx = x1-x0
-        dy = y1-y0
-        a += 0.5*(y0*dx - x0*dy)
+    x0, y0 = vs[0]
+    for [x1, y1] in vs[1:]:
+        dx = x1 - x0
+        dy = y1 - y0
+        a += 0.5 * (y0 * dx - x0 * dy)
         x0 = x1
         y0 = y1
     return a
+
+
+def area_connected_pixels(zi, xi, yi, z_thresh):
+    """
+    Implemented by Y. Hidaka. Based on his previous work: "pure_eval()" in "optim.py" at
+    /nsls2/data/staff/yhidaka/APC-Cluster-Clashes/git_repos/sqmxnsls2/20191106_jfdelta
+
+    Requires scikit-image.
+
+    Finds the number of connected pixels in a convergence map and calculates
+    the area based on this value.
+    """
+
+    from skimage.measure import label as sk_label
+
+    method_conn_vol_count = 3
+
+    bw = np.zeros_like(zi).astype(bool)
+    bw[zi <= z_thresh] = True
+
+    dx = (xi[-1] - xi[0]) / len(xi)
+    dy = (yi[-1] - yi[0]) / len(yi)
+    unit_area = dx * dy
+
+    nx = len(xi)
+
+    # Specify "anchor" indexes the connected volume should contain
+    anchor_x_index = nx // 2  # pick index that is as close to x=0
+    anchor_y_index = 0  # first index is always y = 0
+    #
+    if False:
+        plt.figure()
+        plt.pcolormesh(zi)
+        plt.colorbar()
+
+        plt.figure()
+        plt.pcolormesh(bw)
+        plt.colorbar()
+    #
+    labeled = sk_label(bw, connectivity=2)
+    #
+    if (
+        method_conn_vol_count == 1
+    ):  # This method may pick up a small island, instead of the largest one
+        conn_count = np.sum(labeled == 1)
+        # "1" will pick the second largest connected volume <= This is NOT necessary true!
+    elif method_conn_vol_count == 2:  # This method may also NOT pick the correct island
+        sample_index = 0
+        conn_count_candidates = []
+        for u_label_val in np.unique(labeled):
+            inds = np.where(labeled == u_label_val)
+            if (
+                bw[inds[0][sample_index], inds[1][sample_index], inds[2][sample_index]]
+                == 1
+            ):  # "== 1" means the selected voxel satisfies the flucturation threshold condition
+                conn_count = len(inds[0])
+                conn_count_candidates.append(conn_count)
+        if conn_count_candidates:
+            conn_count = np.max(conn_count_candidates)
+        else:
+            conn_count = 0
+    elif method_conn_vol_count == 3:  # This should work best. This method will
+        # find which label corresponds to the connected volume that contains the
+        # anchor point.
+        # Shape of "bw" = (nY)-by-(nX)
+        if np.isnan(bw[anchor_y_index, anchor_x_index]):
+            conn_count = 0
+        else:
+            conn_count = 0
+            for u_label_val in np.unique(labeled):
+                inds = np.where(labeled == u_label_val)
+                m = np.logical_and(inds[1] == anchor_x_index, inds[0] == anchor_y_index)
+                if np.sum(m) == 0:
+                    continue
+                elif np.sum(m) == 1:
+                    conn_count = len(inds[0])
+                    break
+                else:
+                    print("anchor point more than one match: {:d}".format(np.sum(m)))
+                    raise RuntimeError("Unexpected situation")
+
+    else:
+        raise ValueError
+
+    return unit_area * conn_count
+
 
 def plotxyz(
     xset,
@@ -950,12 +1038,15 @@ def plotxyz(
 ):
     if diff_lvl is None:
         diff_lvl = [-8]
-        
+    else:
+        diff_lvl = [diff_lvl]
+
     import matplotlib as mtb
-    mtb.style.use('classic')
-    plt.rcParams['font.family'] = 'Times New Roman'
+
+    mtb.style.use("classic")
+    plt.rcParams["font.family"] = "Times New Roman"
     from scipy.interpolate import griddata
-        
+
     # plot x-xp distribution with spectrum of energy as colorbar(linewidth thin to have thin circle, pickradius gives dot size)
     # plt.subplot(111)
     # fig = plt.figure(146)
@@ -977,15 +1068,15 @@ def plotxyz(
     p.ax.set_ylabel(spectrallabel, fontsize=20)
     xi = np.linspace(min(xset), max(xset), 1000)
     yi = np.linspace(min(yset), max(yset), 1000)
-    zi = griddata((xset, yset), minzlist, (xi[None,:], yi[:,None]), method='linear')
-    lvls=diff_lvl
-    cp=plt.contour(xi, yi, zi, levels=lvls,colors=['k'],linestyles='solid')
-    #plt.clabel(cp, inline=1,fontsize=5, colors=['k','k','k','k','k'])
+    zi = griddata((xset, yset), minzlist, (xi[None, :], yi[:, None]), method="linear")
+    lvls = diff_lvl
+    cp = plt.contour(xi, yi, zi, levels=lvls, colors=["k"], linestyles="solid")
+    # plt.clabel(cp, inline=1,fontsize=5, colors=['k','k','k','k','k'])
     contour = cp.collections[0]
     vs = contour.get_paths()[0].vertices
-    a = area(vs)
-    print('area under within the specified diffusion level = ', a)
-    '''
+    a = area_2dpolygon(vs)
+    print("area under within the specified diffusion level = ", a)
+    """
     # Get one of the contours from the plot.
     for i in range(len(lvls)):
         contour = cp.collections[i]
@@ -993,8 +1084,8 @@ def plotxyz(
         # Compute area enclosed by vertices.
         a = area(vs)
         print("r = " + str(lvls[i]) + ": a =" + str(a))
-    '''
-    #plt.contour(xset,yset,minzlist,color='k')
+    """
+    # plt.contour(xset,yset,minzlist,color='k')
     plt.xlabel(xlabel, fontsize=20)
     plt.ylabel(ylabel, fontsize=20)
     plt.title("Map from Convergence Diagram")
@@ -1005,8 +1096,10 @@ def plotxyz(
     # plt.show()
     # plt.savefig(plotfilename)
     # plt.close()
-    
-    return dict(fig=fig, a=a)
+
+    a_conn_pix = area_connected_pixels(zi, xi, yi, diff_lvl[0])
+
+    return dict(fig=fig, area_polygon=a, area_conn_pix=a_conn_pix)
 
 
 # ar, ar2=example6(
@@ -1191,6 +1284,8 @@ def scanxy(
     xyntheta_scan_input=None,
     init_tpsa_input=None,
     init_tpsa_output=None,
+    return_area=False,
+    diff_lvl=-12,
 ):
     tt0 = [["scanxy start", time.time(), 0]]
     print(tt0)
@@ -1266,13 +1361,13 @@ def scanxy(
     tt1 = [["scanxy end", time.time(), time.time() - tt0[0][1]]]
     print(tt1)
     x, y, z = list(zip(*xyminz))
-    fig = plotxyz(x, y, z, markersize=130)
+    out = plotxyz(x, y, z, markersize=130, diff_lvl=diff_lvl)
     sv("junk9", [x, y, z])
-    # scanxy()
+
     if savearecord:
-        return ar
-    else:
-        return
+        out["ar"] = ar
+
+    return out
 
 
 def scan_n_theta(
