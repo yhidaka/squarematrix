@@ -10,6 +10,21 @@ import matplotlib.pyplot as plt
 
 from squarematrix import scanxy
 
-scanxy()
+init_tpsa_input = {
+    "nvar": 4,
+    "n_theta": 4,  # 12, #
+    "cutoff": 4,  # 12, #
+    "norder": 5,
+    "norder_jordan": 3,
+    "use_existing_tpsa": 0,
+    "oneturntpsa": "tpsa",
+    "deltap": -0.025,
+    "ltefilename": "20140204_bare_1supcell",
+    "mod_prop_dict_list": [],
+    "tpsacode": "yuetpsa",
+    "dmuytol": 0.01,
+}
+
+scanxy(init_tpsa_input=init_tpsa_input)
 
 plt.show()
