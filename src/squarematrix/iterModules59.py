@@ -21,8 +21,12 @@ import matplotlib.mlab as mlab
 import scipy
 import pdb
 
-t0 = time.perf_counter()
-timing = [["in iterModule, start", time.perf_counter()]]
+# DEBUG = True
+DEBUG = False
+
+if DEBUG:
+    t0 = time.perf_counter()
+    timing = [["in iterModule, start", time.perf_counter()]]
 # import jnfdefinition
 # jfdf = jnfdefinition
 # import squarematrixdefinition
@@ -40,8 +44,11 @@ global scalex, tol
 
 tol = 1e-12
 
-print(time.perf_counter() - t0, "in iterModules52, seconds for import sqdf and jfdf")
-t0 = time.perf_counter()
+if DEBUG:
+    print(
+        time.perf_counter() - t0, "in iterModules52, seconds for import sqdf and jfdf"
+    )
+    t0 = time.perf_counter()
 
 
 def sv(filename, x):
@@ -115,23 +122,27 @@ def bnmphiCauchyCutoffWithIntrokam(
 ):  # Calculate period T from given phi(t_k), where t_k is only on approximate period T1 on uniformly divided points
     # as described by Section 3B of "compareIntrokamwithme.lyx".
     # x0,xp0,x1,xp1,phi1,av10,thetav10,v10,v11=np.array(fluc)
-    tt0 = [["in Cauchycut       1, start", time.time(), 0]]
-    print("tt0=", tt0)
+    if DEBUG:
+        tt0 = [["in Cauchycut       1, start", time.time(), 0]]
+        print("tt0=", tt0)
     phi1old, phi2old, th10, th20 = np.array(fluc)
-    tt1 = [["in Cauchycut      , 1.2 ", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Cauchycut      , 1.2 ", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     om1, om2 = mysum.sum(phi1old, phi2old)
-    om1, om2 = om1.real / n_theta ** 2, om2.real / n_theta ** 2
+    om1, om2 = om1.real / n_theta**2, om2.real / n_theta**2
     """
     om1 = sum(phi1old.real) / n_theta ** 2
     om2 = sum(phi2old.real) / n_theta ** 2
     """
-    tt1 = [["in Cauchycut      , 1.3 ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Cauchycut      , 1.3 ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     phi1old = phi1old.reshape([n_theta, n_theta])
     phi2old = phi2old.reshape([n_theta, n_theta])
-    tt1 = [["in Cauchycut      , 2. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Cauchycut      , 2. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     phi1 = (
         phi1old - om1
     )  # phi here is Delta phi of eq.35 of /Users/lihuayu/Desktop/nonlineardynamics/henonheiles/sqmxnsls/latticenonlinerresonance.lyx
@@ -140,25 +151,27 @@ def bnmphiCauchyCutoffWithIntrokam(
     th10 = th10.real % (2 * np.pi)  # that is th10 is redefined as mod(th10,2*np.pi)
     th20 = th20.real % (2 * np.pi)
     aphi10 = (
-        sum(phi1) / n_theta ** 2
+        sum(phi1) / n_theta**2
     )  # see Eq.4 of "compareIntrokamwithme.lyx" but this line seems is obsolete (nowhere else uses aphi10)
     aphi20 = (
-        sum(phi2) / n_theta ** 2
+        sum(phi2) / n_theta**2
     )  # see Eq.4 of "compareIntrokamwithme.lyx" /Users/lihuayu/Desktop/nonlineardynamics/henonheiles/latticesqmx/compareIntrokamwithme.lyx
     nux = om1 * dt / 2 / np.pi
     nuy = om2 * dt / 2 / np.pi
-    tt1 = [["in Cauchycut      , 3. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Cauchycut      , 3. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
 
     aphi1 = (
-        np.fft.fft2(phi1) / n_theta ** 2
+        np.fft.fft2(phi1) / n_theta**2
     )  # aphi[n,m] is the Fourier expansion coefficent of exp(1j*(n*(theta1-th10)+m*(theta2-th20))), ie. its argument is theta1-th10, not theta1!
     aphi2 = (
-        np.fft.fft2(phi2) / n_theta ** 2
+        np.fft.fft2(phi2) / n_theta**2
     )  # This two lines shows the phi1, phi2 here are on unit circle, and aphia,aphi2 are the result of one turn advance with fluctuation.
 
-    tt1 = [["in Cauchycut,      , 4. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Cauchycut,      , 4. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
 
     if applyCauchylimit:
         a1, b1, a2, b2 = Cauchylimit["Cauchylim"]
@@ -192,8 +205,9 @@ def bnmphiCauchyCutoffWithIntrokam(
     # aphi1tmp=np.fft.fft(phi1[:-1])/n_theta #aphi[n,m] is the Fourier expansion coefficent of exp(1j*(n*theta1+m*theta2))
     # phi1mean=aphi1[0,0]
     # phi2mean=aphi2[0,0]
-    tt1 = [["in Cauchycut      , 5. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Cauchycut      , 5. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     """
         2.Use fft of derivatives phi to calculate fft of the first order perturbed trajectory, ie. bnm. see eq.1.14 of "jfn-resonance5.pdf"
 
@@ -205,8 +219,9 @@ def bnmphiCauchyCutoffWithIntrokam(
         np.zeros([n_theta, n_theta]) * (1 + 0j),
     )
     """
-    tt1 = [["in Cauchycut      , 6. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Cauchycut      , 6. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     cutoff = Cauchylimit["aliasingCutoff"]
     if cutoff > n_theta:
         cutoff = n_theta
@@ -241,10 +256,11 @@ def bnmphiCauchyCutoffWithIntrokam(
                 # so in order bnl1[m] to represents theta_tilde in in Eq.38 in paper "1DlatticenonlinearResonances.lyx"
                 # do not we need this factor np.exp(-1j*i*th10). Based on henonmap study
     """
-    tt1 = [["in Cauchycut      , 7. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
-    bnm1rsh = bnm1.reshape([n_theta ** 2])
-    bnm2rsh = bnm2.reshape([n_theta ** 2])
+    if DEBUG:
+        tt1 = [["in Cauchycut      , 7. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
+    bnm1rsh = bnm1.reshape([n_theta**2])
+    bnm2rsh = bnm2.reshape([n_theta**2])
     bnm1rsh, bnm2rsh = mysum.sum(bnm1rsh, bnm2rsh)
     bnm1[0, 0], bnm2[0, 0] = -bnm1rsh, -bnm2rsh
 
@@ -253,10 +269,11 @@ def bnmphiCauchyCutoffWithIntrokam(
     bnm2[0, 0] = -sum(bnm2.reshape([n_theta ** 2]))  # the
     """
     # it is checked that sum(bnm1)~1e-17, aphi1[0].real~1e-17 as required by Eq.4 of "compareIntrokamwithme.lyx"
-    tt1 = [["in Cauchycut      , 8. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
-    tt1 = [["in Cauchycut      , 8. ", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Cauchycut      , 8. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
+        tt1 = [["in Cauchycut      , 8. ", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     return aphi1, aphi2, om1, om2, nux, nuy, bnm1, bnm2, th10, th20
 
 
@@ -408,7 +425,7 @@ def matrixsort(
 
 def findphipeaks(bnm1, bnm2, n_theta, nux, nuy, th10, th20, v120i, npeaks=20):
     v10i, v20i = v120i
-    bnm2s = bnm2.reshape([n_theta ** 2])
+    bnm2s = bnm2.reshape([n_theta**2])
     tmp3 = abs(bnm2s)
     tmp4 = matrixsort(
         tmp3, n_theta
@@ -422,7 +439,7 @@ def findphipeaks(bnm1, bnm2, n_theta, nux, nuy, th10, th20, v120i, npeaks=20):
     peaksposition1int2 = modularToNo2(array(tmp5[1]), n_theta)
     # sumpeak2=sum(abs(peakvaluesint2)**2)
 
-    bnm1s = bnm1.reshape([n_theta ** 2])
+    bnm1s = bnm1.reshape([n_theta**2])
     tmp3 = abs(bnm1s)
     tmp4 = matrixsort(
         tmp3, n_theta
@@ -486,8 +503,9 @@ def findphipeaks(bnm1, bnm2, n_theta, nux, nuy, th10, th20, v120i, npeaks=20):
 
 
 def inversefftnew2(bnm1, bnm2, n_theta, v120i):
-    tt0 = [["in inversefft 1, start", time.time(), 0]]
-    print("tt0=", tt0)
+    if DEBUG:
+        tt0 = [["in inversefft 1, start", time.time(), 0]]
+        print("tt0=", tt0)
     v10i, v20i = v120i
     vnm1, vnm2 = bnm1.copy(), bnm2.copy()
     # based on comparison of the sign in the exponents in the definition of fft and eq.1.15
@@ -495,8 +513,9 @@ def inversefftnew2(bnm1, bnm2, n_theta, v120i):
     # it corresponds to change the signs of theta1 and theta2 in indixes of v1n,v2n
     # which are i and j:
     v1nn, v2nn = np.fft.fft2(vnm1), np.fft.fft2(vnm2)
-    tt1 = [["in inversefft, 2. ", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in inversefft, 2. ", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     """
     # np.flipud(np.fliplr(A))
     v1n, v2n = v1nn.copy(), v2nn.copy()
@@ -529,8 +548,9 @@ def inversefftnew2(bnm1, bnm2, n_theta, v120i):
     v2n = v2nn.copy()
     v2n[:, 1:] = np.fliplr(v2nn[:, 1:])
     v2n[1:, :] = np.flipud(v2n[1:, :])
-    tt1 = [["in inversefft, 3. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in inversefft, 3. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     """
     tmp = []
     for theta01 in np.arange(0, 2.0 * np.pi, 2 * np.pi / n_theta):
@@ -558,36 +578,41 @@ def inversefftnew2(bnm1, bnm2, n_theta, v120i):
     hh, vv = np.meshgrid(hl, hl)
     v1n = v10i * np.exp(1j * (vv + v1n))
     v2n = v20i * np.exp(1j * (hh + v2n))
-    tt1 = [["in inversefft, 5. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
-    tt1 = [["in inversefft, 6. total ", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in inversefft, 5. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
+        tt1 = [["in inversefft, 6. total ", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     return v1n, v2n
 
 
 def scalefun(
     Zs, Vmtx, v1s, v2s, fscale
 ):  # Equation for z:  v1(z)==v1,v2(z)==v2 , here v1,v2 are fuctions v1x,v3x defined in section 19.2
-    tt0 = [["scalefun, 1, start", time.time(), 0]]
-    print(tt0)
+    if DEBUG:
+        tt0 = [["scalefun, 1, start", time.time(), 0]]
+        print(tt0)
     v1mtx, v2mtx = Vmtx
     v1mv1 = np.dot(v1mtx, Zs.transpose()) - v1s
     # Notice wx,wy here explicitly are normalized here.
-    tt1 = [["scalefun, 2 end", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["scalefun, 2 end", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
     v2mv2 = np.dot(v2mtx, Zs.transpose()) - v2s
-    tt1 = [["scalefun, 3 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["scalefun, 3 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     fun = [
         v1mv1.real * fscale[0],
         v1mv1.imag * fscale[1],
         v2mv2.real * fscale[2],
         v2mv2.imag * fscale[3],
     ]
-    tt1 = [["scalefun, 4 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
-    tt1 = [["scalefun, 4 end", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["scalefun, 4 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
+        tt1 = [["scalefun, 4 end", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
     # Notice scalefun differs from veq(x) only by shifting x to x+s0, and mutiplies veq by fscale: fscale*veq(s0+x)
     return np.array(fun).transpose()
 
@@ -616,8 +641,9 @@ def scaledfprime(
 def fsolvebyscaleHomeMadeblock(
     xyt, v1s, v2s, Vmtx, dVdXmatrix, dVdXmtx, findsoparamters, Zpar3
 ):
-    tt0 = [["invdvdx, 1, start", time.time(), 0]]
-    print(tt0)
+    if DEBUG:
+        tt0 = [["invdvdx, 1, start", time.time(), 0]]
+        print(tt0)
     # see fsolveHomeMade.lyx in /Users/lihuayu/Desktop/nonlineardynamics/henonheiles/offmnewtpsa/theory_vb_iteration
     bKi, scalex, norder_jordan, powerindex3 = Zpar3
     xtol, fscale, xscale, xfactor, factor, fevtol, gu0 = [
@@ -633,19 +659,23 @@ def fsolvebyscaleHomeMadeblock(
     u0 = gu0
     s0 = xyt - u0
     uu = u0
-    tt1 = [["invdvdx, 2 end", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 2 end", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
     xtmp = np.array(s0 + uu)
     Zs = zcolnew.zcolarray(xtmp, norder_jordan, powerindex3)
-    tt1 = [["invdvdx, 2.1 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 2.1 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     v = scalefun(Zs, Vmtx, v1s, v2s, fscale)
-    tt1 = [["invdvdx, 2.2 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 2.2 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
 
     dvdx = scaledfprime(Zs, dVdXmtx, fscale)
-    tt1 = [["invdvdx, 3 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 3 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
 
     uu = u0
     ik = 0
@@ -653,14 +683,16 @@ def fsolvebyscaleHomeMadeblock(
     # dx = np.array([dx for i in range(400)])
     dx = 1e-3
     maxdx = np.amax(abs(dx))
-    tt1 = [["invdvdx, 4 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 4 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
 
     while (
         maxdx > xtol and maxdx > fevtol and ik < 2
     ):  # find solution u such that scalefun(Zs(u))=0
-        tt1 = [["invdvdx, 5 end", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["invdvdx, 5 end", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         # Zs = zcolnew.zcolarray(s0 + uu, norder_jordan, powerindex3)
 
         # v = scalefun(Zs, Vmtx, v1s, v2s, fscale)
@@ -684,23 +716,28 @@ def fsolvebyscaleHomeMadeblock(
         dx = np.array(dx)
         """
         dx, invdvdx = leq.lineareq_block(dvdx, v)
-        tt1 = [["invdvdx, 7 end", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["invdvdx, 7 end", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
 
         uu = uu + dx
         ik = ik + 1
         maxdx = np.amax(abs(dx))
-        tt1 = [["invdvdx, 7.01 end", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["invdvdx, 7.01 end", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         Zs = zcolnew.zcolarray(s0 + uu, norder_jordan, powerindex3)
-        tt1 = [["invdvdx, 7.1 end", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["invdvdx, 7.1 end", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         v = scalefun(Zs, Vmtx, v1s, v2s, fscale)
-        tt1 = [["invdvdx, 7.2 end", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["invdvdx, 7.2 end", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         dvdx = scaledfprime(Zs, dVdXmtx, fscale)
-        tt1 = [["invdvdx, 8 end", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["invdvdx, 8 end", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         """
         print("\n\tin fsolve block v=", np.amax(abs(v)))
         print("\tdvdx=", np.amax(abs(dvdx)))
@@ -710,22 +747,26 @@ def fsolvebyscaleHomeMadeblock(
         """
     # Notice scalefun differs from veq(x) only by shifting x to x+s0, and mutiplies veq by fscale: fscale*veq(s0+x)
     # so Jacobian of scalefun is fsacle*dVdXt
-    tt1 = [["invdvdx, 9.1 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 9.1 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     xyd = (uu + s0).transpose()
     xs, xps, ys, yps = xyd
     if ik < 6:
         msg = {"warnflag": "usehomemadefsoveblock"}
     else:
         msg = {"warnflag": "divergent."}
-    tt1 = [["invdvdx, 9.2 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 9.2 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     msg["fvec"] = v / fscale  # the error in f is scaled back its true value here.
-    tt1 = [["invdvdx, 9.3 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 9.3 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     msg["nfev"] = ik
-    tt1 = [["invdvdx, 9.4 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 9.4 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     vscale2 = (v / fscale) ** 2 / 4
     use_fvec_max = True
     if not use_fvec_max:
@@ -742,10 +783,11 @@ def fsolvebyscaleHomeMadeblock(
             + vscale2[:, 3].tolist()
         )  #
     msg["outfindso"] = "homeMadefsolveBlock"
-    tt1 = [["invdvdx, 9.5 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
-    tt1 = [["invdvdx, 9.6 total", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["invdvdx, 9.5 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
+        tt1 = [["invdvdx, 9.6 total", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     return xyd, Zs, msg
 
@@ -762,8 +804,9 @@ def findsoblock(
     Zpar3,
     findsoparamters,
 ):
-    tt0 = [["in findsoblock 1, start", time.time(), 0]]
-    print("tt0=", tt0)
+    if DEBUG:
+        tt0 = [["in findsoblock 1, start", time.time(), 0]]
+        print("tt0=", tt0)
     nsosteplim = findsoparamters["nsosteplim"]
     fevtol = findsoparamters["fevtol"]
     nonconverge = True
@@ -774,14 +817,16 @@ def findsoblock(
         v1q = np.array([v1s0 + i * dv1 for i in range(1, nfindso + 1)])
         v2q = np.array([v2s0 + i * dv2 for i in range(1, nfindso + 1)])
         xyq = [dict(xsol=xy0)]
-        tt1 = [["in findsoblock, 2. ", time.time(), time.time() - tt0[0][1]]]
-        print("tt1=", tt1)
+        if DEBUG:
+            tt1 = [["in findsoblock, 2. ", time.time(), time.time() - tt0[0][1]]]
+            print("tt1=", tt1)
         for ik in range(nfindso):
             xyt = xyq[-1]["xsol"]
             v1qik = v1q[ik]
             v2qik = v2q[ik]
-            tt1 = [["in findsoblock, 3. ", time.time(), time.time() - tt1[0][1]]]
-            print("tt1=", tt1)
+            if DEBUG:
+                tt1 = [["in findsoblock, 3. ", time.time(), time.time() - tt1[0][1]]]
+                print("tt1=", tt1)
             xys, Zsd, msg = fsolvebyscaleHomeMadeblock(
                 xyt,
                 v1qik,
@@ -793,8 +838,9 @@ def findsoblock(
                 Zpar3,
             )
             # tmp1=scipy.optimize.fsolve(veq,[ xt,xpt,yt,ypt],args=[acoeff,v1q[i],v2q[i],v0norm],xtol=1e-10,factor=0.5,full_output=True)#Find the z value for new v1(z),v2(z)
-            tt1 = [["in findsoblock, 4. ", time.time(), time.time() - tt1[0][1]]]
-            print("tt1=", tt1)
+            if DEBUG:
+                tt1 = [["in findsoblock, 4. ", time.time(), time.time() - tt1[0][1]]]
+                print("tt1=", tt1)
             msg["xsol"] = xys
             msg["nfindso"] = nfindso
             msg["Zsd"] = Zsd
@@ -809,10 +855,11 @@ def findsoblock(
             nonconverge = False
         # print ('nfindso=',nfindso,'\n')
         nfindso = nfindso * 2
-        tt1 = [["in findsoblock, 5. ", time.time(), time.time() - tt1[0][1]]]
-        print("tt1=", tt1)  # tmp=list(zip(*xyq))
-        tt1 = [["in findsoblock, 6. ", time.time(), time.time() - tt0[0][1]]]
-        print("tt1=", tt1)  # tmp=list(zip(*xyq))
+        if DEBUG:
+            tt1 = [["in findsoblock, 5. ", time.time(), time.time() - tt1[0][1]]]
+            print("tt1=", tt1)  # tmp=list(zip(*xyq))
+            tt1 = [["in findsoblock, 6. ", time.time(), time.time() - tt0[0][1]]]
+            print("tt1=", tt1)  # tmp=list(zip(*xyq))
     return xyq[-1]
 
 
@@ -823,8 +870,9 @@ def inversev1v2(
     usewinv=0,  # if usefindso=1, then equation used is veqt, i.e.,  equation is calculated by tpsa, and we may choose to use frime or not in fsolve
     usefindsoscale="usefsolvebyscaleHomeMade",
 ):
-    tt0 = [["in inversev1v2, 1, start", time.time(), 0]]
-    print(tt0)
+    if DEBUG:
+        tt0 = [["in inversev1v2, 1, start", time.time(), 0]]
+        print(tt0)
     #######################################################
     for extrac_input_data_for_fsolve in [1]:
         (
@@ -862,21 +910,23 @@ def inversev1v2(
         # n=2
         xydlast = xyd0.reshape([4, n_theta, n_theta])
         # import pdb;
-        tt1 = [["in inversev1v2, 2 end", time.time(), time.time() - tt0[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["in inversev1v2, 2 end", time.time(), time.time() - tt0[0][1]]]
+            print(tt1)
 
         bKi, scalex, norder_jordan, powerindex3 = Zpar
-        v1s = v1n.reshape([n_theta ** 2])
-        v2s = v2n.reshape([n_theta ** 2])
-        xy0 = xydlast.reshape([4, n_theta ** 2])
+        v1s = v1n.reshape([n_theta**2])
+        v2s = v2n.reshape([n_theta**2])
+        xy0 = xydlast.reshape([4, n_theta**2])
         Zs = zcolnew.zcolarray(xy0.transpose(), norder_jordan, powerindex3).transpose()
         v1mtx, v2mtx = Vmtx
         v1s0 = np.dot(v1mtx, Zs)
         v2s0 = np.dot(v2mtx, Zs)
-        v1s = v1n.reshape([n_theta ** 2])
-        v2s = v2n.reshape([n_theta ** 2])
-    tt1 = [["in inversev1v2, 3 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+        v1s = v1n.reshape([n_theta**2])
+        v2s = v2n.reshape([n_theta**2])
+    if DEBUG:
+        tt1 = [["in inversev1v2, 3 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     #######################################################
     outfindso = findsoblock(
         xy0,
@@ -890,8 +940,9 @@ def inversev1v2(
         Zpar,
         findsoparamters,
     )
-    tt1 = [["in inversev1v2, 4 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["in inversev1v2, 4 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     #######################################################
     for extract_output_data in [1]:
         xyd = outfindso["xsol"]
@@ -901,8 +952,9 @@ def inversev1v2(
         tmp42 = outfindso["nfev"]
         nfindso = outfindso["nfindso"]
         fvec = outfindso["fvec"]
-        tt1 = [["in inversev1v2, 5 end", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["in inversev1v2, 5 end", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         inversev1v2msg = {
             "warnflag": "useBlockfsolve",
             "maxerror": tmp41,  # max(tmp41),
@@ -912,8 +964,9 @@ def inversev1v2(
             "fvec": fvec,
             "outfindso": outfindso,
         }
-        tt1 = [["in inversev1v2, 6 end", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["in inversev1v2, 6 end", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         xydrecord = {
             "vtarget": [v1s, v2s],
             "vtarget": [v1s, v2s],
@@ -921,11 +974,12 @@ def inversev1v2(
             "vtrial": [v1s0, v2s0],
         }
         inversev1v2msg["xydrecord"] = xydrecord
-    tt1 = [["in inversev1v2, 7 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["in inversev1v2, 7 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
 
-    tt1 = [["in inversev1v2, 8 end", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+        tt1 = [["in inversev1v2, 8 end", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     return xyd, Zsd, inversev1v2msg
 
@@ -935,33 +989,40 @@ def Fmatrix(
 ):  # F here =Wwiglejnm in Eq.16 of "latticenonlinearResonances.lyx, the fft of w_j
     # 19.10 of hn49, Construct w1x0,w1y0,w1x1,w1y1 based on similated trajectory obtained from the spectrum of phifftaccurateplot
     warray = np.dot(wmtx, Zsdx.transpose())
-    tt0 = [["in Fmatrix 1, start", time.time(), 0]]
-    print("tt0=", tt0)
+    if DEBUG:
+        tt0 = [["in Fmatrix 1, start", time.time(), 0]]
+        print("tt0=", tt0)
     a1, a2 = acoeff
     """
     warray = np.dot(uarray, Zsd.transpose())
     """
-    tt1 = [["in Fmatrix, 2. ", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Fmatrix, 2. ", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     warray = np.reshape(warray, [nvar, n_theta, n_theta])
-    tt1 = [["in Fmatrix, 3. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
-    F = array(np.fft.fft2(warray)) / n_theta ** 2
+    if DEBUG:
+        tt1 = [["in Fmatrix, 3. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
+    F = array(np.fft.fft2(warray)) / n_theta**2
     # see p.6 of "dvovSpectrumDerivation.pdf", we need to divide by n to get Fourier coefficient
-    tt1 = [["in Fmatrix, 4. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Fmatrix, 4. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     tmp1 = np.transpose(F, [1, 2, 0])
-    tt1 = [["in Fmatrix, 5. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Fmatrix, 5. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     fv2a = np.dot(tmp1, a2 / v0norm[1])
     # fv2a is the spectrum of the first order perturbed action, a deviation from the zero order rigid rotation
     fv1a = np.dot(tmp1, a1 / v0norm[0])
-    tt1 = [["in Fmatrix, 6. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Fmatrix, 6. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     W = array(warray)
     tmp2 = np.transpose(W, [1, 2, 0])
-    tt1 = [["in Fmatrix, 7. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Fmatrix, 7. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     """
     v2a = np.dot(tmp2, a2 / v0norm[1])
     # v2a is recalculated v2n from the perturned coordinates xyd, the deviation from the rigid rotation on grid points of theta0 plane.
@@ -970,10 +1031,11 @@ def Fmatrix(
     v1mtx, v2mtx = Vmtx
     v1a = np.dot(v1mtx, Zsdx.transpose()).reshape([n_theta, n_theta])
     v2a = np.dot(v2mtx, Zsdx.transpose()).reshape([n_theta, n_theta])
-    tt1 = [["in Fmatrix, 8. ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
-    tt1 = [["in Fmatrix, 9. ", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in Fmatrix, 8. ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
+        tt1 = [["in Fmatrix, 9. ", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     return F, v1a, v2a, fv1a, fv2a
 
 
@@ -1434,8 +1496,9 @@ def plotvnv0v1(
         plt.plot(ffm, abs(fv2m), "b-", label="fv2n from tracking")
         plt.plot(fv2nupeak, abs(fv2peak), "mo", label="fv2 naff peak")
     except Exception as err:
-        print(dir(err))
-        print(err.args)
+        if DEBUG:
+            print(dir(err))
+            print(err.args)
     plt.legend(loc="best")
     plt.savefig("junk" + str(fign[3]) + ".png")
     return
@@ -1443,19 +1506,21 @@ def plotvnv0v1(
 
 def anew12(F, nux, nuy, nvar, n_theta, Cauchylimit, ntune):
     # see derivation in "weightedIterationFormulas.lyx in offmnew/theory" for weights
-    tt0 = [["in anew12 1, start", time.time(), 0]]
-    print("tt0=", tt0)
+    if DEBUG:
+        tt0 = [["in anew12 1, start", time.time(), 0]]
+        print("tt0=", tt0)
     # cutoff = n_theta
     cutoff = Cauchylimit["aliasingCutoff"]
-    print(
-        "\n16.6 Calculate optimized linear combination by least \n\
-        square method to minimize fluctuation fft amplitude"
-    )
-    # 24.1 of hn49, Follow p.8 of 'minimizationOfFluctuationOfAction.pdf' in folder 'jfn-resonance5'."
-    print(
-        "\n16.61 Use F matrix to build constant matrix A,B in equation of Lagrangian multiplier method.nvar=",
-        nvar,
-    )
+    if DEBUG:
+        print(
+            "\n16.6 Calculate optimized linear combination by least \n\
+            square method to minimize fluctuation fft amplitude"
+        )
+        # 24.1 of hn49, Follow p.8 of 'minimizationOfFluctuationOfAction.pdf' in folder 'jfn-resonance5'."
+        print(
+            "\n16.61 Use F matrix to build constant matrix A,B in equation of Lagrangian multiplier method.nvar=",
+            nvar,
+        )
     """
         to understand F, let us want find which i gives F[i]=F1[-2,-4]
         we check that tmp1[-2,-4]=52, then we see that F[0,52]=F1[0,-2,-4]
@@ -1486,8 +1551,9 @@ def anew12(F, nux, nuy, nvar, n_theta, Cauchylimit, ntune):
     exclude = (Fa * Fb)[:, :, 1, 0]
     A = np.sum(Fa * Fb, axis=(2, 3)) - exclude
     """
-    tt1 = [["in anew12 5", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in anew12 5", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
 
     iCut = cutoff // 2
     Fcut = np.concatenate((F[:, :iCut, :], F[:, -iCut:, :]), axis=1)
@@ -1497,13 +1563,15 @@ def anew12(F, nux, nuy, nvar, n_theta, Cauchylimit, ntune):
     Fab = Fa.conj() * Fb
     exclude = Fab[:, :, 1, 0]
     A = np.sum(Fab, axis=(2, 3)) - exclude
-    tt1 = [["in anew12 6", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in anew12 6", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
 
     exclude = Fab[:, :, 0, 1]
     B = np.sum(Fab, axis=(2, 3)) - exclude
-    tt1 = [["in anew12 7", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in anew12 7", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
 
     """
     alpharangeA = [
@@ -1536,21 +1604,23 @@ def anew12(F, nux, nuy, nvar, n_theta, Cauchylimit, ntune):
                 )
     """
 
-    print("\n16.62 the matrixes A and B of p.8:A=")
-    # jfdf.pcm(A*1e-4,nvar,nvar)
-    print("B=")
-    # jfdf.pcm(B*1e-4,nvar,nvar)
+    if DEBUG:
+        print("\n16.62 the matrixes A and B of p.8:A=")
+        # jfdf.pcm(A*1e-4,nvar,nvar)
+        print("B=")
+        # jfdf.pcm(B*1e-4,nvar,nvar)
     Am = np.linalg.inv(A)
     Bm = np.linalg.inv(B)
-    print("\n16.63 the matrixes A and B of p.8:A^-1=")
-    # jfdf.pcm(Am,nvar,nvar)
-    print("B^-1=")
-    # jfdf.pcm(Bm,nvar,nvar)
-    """
-                The solution of the equation in page 5 of 'minimizationOfFluctuationOfAction.pdf', xxis X, yy is Y
+    if DEBUG:
+        print("\n16.63 the matrixes A and B of p.8:A^-1=")
+        # jfdf.pcm(Am,nvar,nvar)
+        print("B^-1=")
+        # jfdf.pcm(Bm,nvar,nvar)
         """
-    tt1 = [["in anew12 8", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+                    The solution of the equation in page 5 of 'minimizationOfFluctuationOfAction.pdf', xxis X, yy is Y
+            """
+        tt1 = [["in anew12 8", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
 
     xx = np.dot(Am, np.conjugate(F[:, 1, 0]))
     xxd = np.dot(F[:, 1, 0], xx)
@@ -1568,14 +1638,15 @@ def anew12(F, nux, nuy, nvar, n_theta, Cauchylimit, ntune):
                 a2new=np.append(a2new,[0,0])
         """
     acoeffnew = array([a1new, a2new])
-    tt1 = [["in anew12 9", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in anew12 9", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     return acoeffnew
 
 
 def plotfvnew(acoeffnew, nux, nuy, F, nvar, n_theta, fign=(26, 27)):
     a1new, a2new = acoeffnew
-    Fs = np.reshape(F, [nvar, n_theta ** 2])
+    Fs = np.reshape(F, [nvar, n_theta**2])
     fv1new = np.dot(a1new, Fs)
     fv2new = np.dot(a2new, Fs)
     fv1new = np.reshape(fv1new, [n_theta, n_theta])
@@ -1807,10 +1878,10 @@ def plot2Dcrossection(
     lbl=("x0d,xp0d", "y0d,yp0d"),
 ):  # plot tracking x,xp and x0d,xp0d from scanning v1,v2 in a cross section in narrow range of yp
     x0n, xp0n, y0n, yp0n = (
-        x0d.reshape(n_theta ** 2),
-        xp0d.reshape(n_theta ** 2),
-        y0d.reshape(n_theta ** 2),
-        yp0d.reshape(n_theta ** 2),
+        x0d.reshape(n_theta**2),
+        xp0d.reshape(n_theta**2),
+        y0d.reshape(n_theta**2),
+        yp0d.reshape(n_theta**2),
     )
     tmp = array([x0n, xp0n, y0n, yp0n]).real.transpose()  # (x,xp,y,yp) in every row
     x0n, xp0n, y0n, yp0n = np.array(
@@ -1837,10 +1908,10 @@ def plot2Dcrossection(
     plt.savefig("junk" + str(fign[0]) + ".png")
 
     x0n, xp0n, y0n, yp0n = (
-        x0d.reshape(n_theta ** 2),
-        xp0d.reshape(n_theta ** 2),
-        y0d.reshape(n_theta ** 2),
-        yp0d.reshape(n_theta ** 2),
+        x0d.reshape(n_theta**2),
+        xp0d.reshape(n_theta**2),
+        y0d.reshape(n_theta**2),
+        yp0d.reshape(n_theta**2),
     )
     tmp = array([x0n, xp0n, y0n, yp0n]).real.transpose()  # (x,xp,y,yp) in every row
     x0n, xp0n, y0n, yp0n = np.array(
@@ -1868,8 +1939,8 @@ def plot2Dcrossection(
 
 
 def plotv1nv2nThetaVGrid(v1n, v2n, n_theta, fign=(25, 27, 29)):
-    thetav1d = list(map(cmath.phase, v1n.reshape([n_theta ** 2])))
-    thetav2d = list(map(cmath.phase, v2n.reshape([n_theta ** 2])))
+    thetav1d = list(map(cmath.phase, v1n.reshape([n_theta**2])))
+    thetav2d = list(map(cmath.phase, v2n.reshape([n_theta**2])))
     plt.figure(fign[2])
     plt.plot(thetav1d, thetav2d, ".")
     plt.xlabel("thetav1d")

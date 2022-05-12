@@ -261,7 +261,7 @@ def _tps_cell_pass(
     ncells = len(pass_func_list)
     v = [x, px, y, py, dp, ct]
     for i, func in enumerate(pass_func_list):
-        print(f"#{i+1:d} / {ncells:d}")
+        # print(f"#{i+1:d} / {ncells:d}")
         if func.func is Mpole_Pass:
             # print('Mpole_Pass')
             mcount += 1

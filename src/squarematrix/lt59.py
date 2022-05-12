@@ -40,9 +40,13 @@ from . import iterlt59 as lt53
 from .iterlt59 import xyntheta_from_X0
 from .iterlt59 import change_n_theta
 
+# DEBUG = True
+DEBUG = False
+
 # from iterlt59 import lattice
 
-t0.append(["41", time.time(), time.time() - t0[-1][1]])
+if DEBUG:
+    t0.append(["41", time.time(), time.time() - t0[-1][1]])
 
 ## reload(lte2tpsa)
 # reload(vph)
@@ -336,7 +340,7 @@ def db_main_lines(ar3, i):
     n_theta = ar3[i]["lattice"].n_theta
     nux = ar3[i]["v12n"]["nux"]
     nuy = ar3[i]["v12n"]["nuy"]
-    dbs = db.reshape([n_theta ** 2])
+    dbs = db.reshape([n_theta**2])
     tmp3 = abs(dbs)
     tmp4 = vph.matrixsort(
         tmp3, n_theta
@@ -1068,36 +1072,46 @@ def plotxyz(
     p.ax.set_ylabel(spectrallabel, fontsize=20)
     xi = np.linspace(min(xset), max(xset), 1000)
     yi = np.linspace(min(yset), max(yset), 1000)
-    zi = griddata((xset, yset), minzlist, (xi[None, :], yi[:, None]), method="linear")
-    lvls = diff_lvl
-    cp = plt.contour(xi, yi, zi, levels=lvls, colors=["k"], linestyles="solid")
-    # plt.clabel(cp, inline=1,fontsize=5, colors=['k','k','k','k','k'])
-    contour = cp.collections[0]
-    vs = contour.get_paths()[0].vertices
-    a = area_2dpolygon(vs)
-    print("area under within the specified diffusion level = ", a)
-    """
-    # Get one of the contours from the plot.
-    for i in range(len(lvls)):
-        contour = cp.collections[i]
-        vs = contour.get_paths()[0].vertices
-        # Compute area enclosed by vertices.
-        a = area(vs)
-        print("r = " + str(lvls[i]) + ": a =" + str(a))
-    """
-    # plt.contour(xset,yset,minzlist,color='k')
-    plt.xlabel(xlabel, fontsize=20)
-    plt.ylabel(ylabel, fontsize=20)
-    plt.title("Map from Convergence Diagram")
-    plt.grid(True)
-    plt.axis([np.min(xset), np.max(xset), np.min(yset), np.max(yset)])
-    plt.tight_layout()
-    plt.savefig("junk146.png")
-    # plt.show()
-    # plt.savefig(plotfilename)
-    # plt.close()
+    try:
+        zi = griddata(
+            (xset, yset), minzlist, (xi[None, :], yi[:, None]), method="linear"
+        )
+    except:
+        zi = None
 
-    a_conn_pix = area_connected_pixels(zi, xi, yi, diff_lvl[0])
+    if zi is not None:
+        lvls = diff_lvl
+        cp = plt.contour(xi, yi, zi, levels=lvls, colors=["k"], linestyles="solid")
+        # plt.clabel(cp, inline=1,fontsize=5, colors=['k','k','k','k','k'])
+        contour = cp.collections[0]
+        vs = contour.get_paths()[0].vertices
+        a = area_2dpolygon(vs)
+        print("area under within the specified diffusion level = ", a)
+        """
+        # Get one of the contours from the plot.
+        for i in range(len(lvls)):
+            contour = cp.collections[i]
+            vs = contour.get_paths()[0].vertices
+            # Compute area enclosed by vertices.
+            a = area(vs)
+            print("r = " + str(lvls[i]) + ": a =" + str(a))
+        """
+        # plt.contour(xset,yset,minzlist,color='k')
+        plt.xlabel(xlabel, fontsize=20)
+        plt.ylabel(ylabel, fontsize=20)
+        plt.title("Map from Convergence Diagram")
+        plt.grid(True)
+        plt.axis([np.min(xset), np.max(xset), np.min(yset), np.max(yset)])
+        plt.tight_layout()
+        plt.savefig("junk146.png")
+        # plt.show()
+        # plt.savefig(plotfilename)
+        # plt.close()
+
+        a_conn_pix = area_connected_pixels(zi, xi, yi, diff_lvl[0])
+    else:
+        a = None
+        a_conn_pix = None
 
     return dict(fig=fig, area_polygon=a, area_conn_pix=a_conn_pix)
 
@@ -1354,8 +1368,9 @@ def scanxy(
             tt1 = [["scanxy1 5 ", time.time(), time.time() - tt1[0][1]]]
             print(tt1, y)
         except Exception as err:
-            print(dir(err))
-            print(err.args)
+            if DEBUG:
+                print(dir(err))
+                print(err.args)
             pass
 
     tt1 = [["scanxy end", time.time(), time.time() - tt0[0][1]]]
@@ -1468,8 +1483,8 @@ def xyspectrum(ari, npass=800, fign=(128, 129), tracking=True):
     n_theta = ari["n_theta"]
     zxyd = zxyd.reshape(4, n_theta, n_theta)
     zxd, zyd = zxyd[0], zxyd[2]
-    fxd = np.fft.fft2(zxd) / n_theta ** 2
-    fyd = np.fft.fft2(zyd) / n_theta ** 2
+    fxd = np.fft.fft2(zxd) / n_theta**2
+    fyd = np.fft.fft2(zyd) / n_theta**2
     nux = ari["v12n"]["nux"]
     nuy = ari["v12n"]["nuy"]
     ###################################################
@@ -1950,8 +1965,9 @@ def find_first_converge(
             if idxminlist[0] > 0:
                 return ar, ntheta, idxminlist[0]
         except Exception as err:
-            print(dir(err))
-            print(err.args)
+            if DEBUG:
+                print(dir(err))
+                print(err.args)
             pass
 
     return ar, ntheta, idxminlist[0]
@@ -2054,16 +2070,20 @@ def ar2_scanx(ntheta=12, y=4e-3, ar2_iter_number=12, n_theta_cutoff_ratio=(1, 0)
     ar2 = []
     for x in np.arange(-1.0e-3, -28.1e-3, -1e-3):
         try:
-            ar2 = ar2 + ar2_xyntheta(
-                x,
-                y,
-                ntheta,
-                xyntheta_scan_input=xyntheta_scan_input,
-                init_tpsa_output=init_tpsa_output,
-            )[1]
+            ar2 = (
+                ar2
+                + ar2_xyntheta(
+                    x,
+                    y,
+                    ntheta,
+                    xyntheta_scan_input=xyntheta_scan_input,
+                    init_tpsa_output=init_tpsa_output,
+                )[1]
+            )
         except Exception as err:
-            print(dir(err))
-            print(err.args)
+            if DEBUG:
+                print(dir(err))
+                print(err.args)
             pass
     x_iter_lndxy, xset, cutoff = plot3Dxydconvergence(ar2, plot3d=False)
     xset, minzlist, arminidx, idxminlist, diverge = scanmin(x_iter_lndxy, xset, cutoff)
@@ -2116,17 +2136,21 @@ def ar2_scan_n_theta(
     ar2 = []
     for ntheta in range(4, ntheta_lim):
         try:
-            ar2 = ar2 + ar2_xyntheta(
-                x,
-                y,
-                ntheta,
-                xyntheta_scan_input=xyntheta_scan_input,
-                init_tpsa_output=init_tpsa_output,
-                scantype="including first iteration",
-            )[1]
+            ar2 = (
+                ar2
+                + ar2_xyntheta(
+                    x,
+                    y,
+                    ntheta,
+                    xyntheta_scan_input=xyntheta_scan_input,
+                    init_tpsa_output=init_tpsa_output,
+                    scantype="including first iteration",
+                )[1]
+            )
         except Exception as err:
-            print(dir(err))
-            print(err.args)
+            if DEBUG:
+                print(dir(err))
+                print(err.args)
             pass
 
     x_iter_lndxy, cutoff, n_thetaset = lt53.plot3Dtheta_vs_xydconvergence(ar2)

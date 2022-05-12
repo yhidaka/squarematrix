@@ -11,6 +11,7 @@ import pickle
 import copy
 import subprocess
 import pdb
+import tempfile
 
 # from importlib import reload
 
@@ -34,7 +35,11 @@ CACHED_TRACY_PASS_FUNCS = None
 TRACKING_CODE = "ELEGANT"
 # TRACKING_CODE = 'Tracy'
 
-print(time.perf_counter() - t0, "in veq52, seconds for import sqdf and jfdf")
+# DEBUG = True
+DEBUG = False
+
+if DEBUG:
+    print(time.perf_counter() - t0, "in veq52, seconds for import sqdf and jfdf")
 t0 = time.perf_counter()
 
 
@@ -59,42 +64,47 @@ global Vm, U, maxchainlenposition, bKi, norder, powerindex, mlen
 
 
 def checkjnf(u, J, scale, nx, phix0, ny, phiy0, Ms, info, tol1, tol2, powerindex):
-    print(
-        "\n",
-        info["sectionname"],
-        ". Check u as left eigenvectors of M: U.M=exp(i*mu)*exp(J).U:",
-    )
-    print(info["Jname"], "=")
-    jfdf.pim(J, len(J), len(J))
+    if DEBUG:
+        print(
+            "\n",
+            info["sectionname"],
+            ". Check u as left eigenvectors of M: U.M=exp(i*mu)*exp(J).U:",
+        )
+        print(info["Jname"], "=")
+        jfdf.pim(J, len(J), len(J))
     maxchainlenposition, maxchainlen, chain, chainposition = jfdf.findchainposition(J)
-    print("position of max length chain=", maxchainlenposition)
-    print("max length chain=", maxchainlen)
+    if DEBUG:
+        print("position of max length chain=", maxchainlenposition)
+        print("max length chain=", maxchainlen)
     tmp1 = np.dot(u, Ms)
     tmp2 = np.exp(1j * (nx * phix0 + ny * phiy0)) * np.dot(jfdf.exp(J, maxchainlen), u)
     tmp3 = tmp1 - tmp2
-    print(
-        info["sectionname"],
-        ". check ",
-        info["uname"],
-        ".",
-        info["Msname"],
-        "=exp(i*",
-        info["muname"],
-        ")*exp(",
-        info["Jname"],
-        ").",
-        info["uname"],
-        ",",
-        abs(tmp3).max(),
-        " relative error:",
-        abs(tmp3).max() / abs(tmp1).max(),
-    )
+    if DEBUG:
+        print(
+            info["sectionname"],
+            ". check ",
+            info["uname"],
+            ".",
+            info["Msname"],
+            "=exp(i*",
+            info["muname"],
+            ")*exp(",
+            info["Jname"],
+            ").",
+            info["uname"],
+            ",",
+            abs(tmp3).max(),
+            " relative error:",
+            abs(tmp3).max() / abs(tmp1).max(),
+        )
 
-    print(info["sectionname"], ". lowest order in ", info["uname"], "[i]:\n")
+    if DEBUG:
+        print(info["sectionname"], ". lowest order in ", info["uname"], "[i]:\n")
     for i in range(len(u)):
         tmp = [sum(powerindex[k]) for k, b in enumerate(abs(u[i])) if b > 1e-8]
         if tmp != []:
-            print(i, min(tmp))
+            if DEBUG:
+                print(i, min(tmp))
 
     def dmt(k, m, tol=tol2):  # Dominating terms of k'th order in uy[m]
         dt = [
@@ -104,13 +114,14 @@ def checkjnf(u, J, scale, nx, phix0, ny, phiy0, Ms, info, tol1, tol2, powerindex
         ]
         return dt
 
-    print(
-        "\n",
-        info["sectionname"],
-        ". dominating terms in ",
-        info["uname"],
-        "[0], their order, and size:",
-    )
+    if DEBUG:
+        print(
+            "\n",
+            info["sectionname"],
+            ". dominating terms in ",
+            info["uname"],
+            "[0], their order, and size:",
+        )
     cc = [
         [k, sum(powerindex[k]), b, powerindex[k].tolist()]
         for k, b in enumerate(abs(u[0]))
@@ -118,45 +129,48 @@ def checkjnf(u, J, scale, nx, phix0, ny, phiy0, Ms, info, tol1, tol2, powerindex
     ]
     cci = np.argsort([i[2] for i in cc])
     ccs = [cc[i] for i in cci]
-    print("\n", info["sectionname"], ". 20 lowest order terms:")
-    for i in cc[:20]:
-        print(i)
+    if DEBUG:
+        print("\n", info["sectionname"], ". 20 lowest order terms:")
+        for i in cc[:20]:
+            print(i)
 
-    print("\n", info["sectionname"], ". 20 dominating terms:")
-    for i in ccs[-20:]:
-        print(i)
+    if DEBUG:
+        print("\n", info["sectionname"], ". 20 dominating terms:")
+        for i in ccs[-20:]:
+            print(i)
 
-    print(
-        "\n",
-        info["sectionname"],
-        ". dominating terms of order 1 in ",
-        info["uname"],
-        "[0] :",
-        [[j[0], j[1].tolist(), j[2]] for j in dmt(1, 0)],
-    )
-    print(
-        info["sectionname"],
-        ". dominating terms of order 2 in ",
-        info["uname"],
-        "[0]:",
-        [[j[1].tolist(), j[2]] for j in dmt(2, 0)],
-    )
-    print(
-        info["sectionname"],
-        ". dominating terms of order 3 in ",
-        info["uname"],
-        "[0]:",
-        [[j[1].tolist(), j[2]] for j in dmt(3, 0)],
-    )
+        print(
+            "\n",
+            info["sectionname"],
+            ". dominating terms of order 1 in ",
+            info["uname"],
+            "[0] :",
+            [[j[0], j[1].tolist(), j[2]] for j in dmt(1, 0)],
+        )
+        print(
+            info["sectionname"],
+            ". dominating terms of order 2 in ",
+            info["uname"],
+            "[0]:",
+            [[j[1].tolist(), j[2]] for j in dmt(2, 0)],
+        )
+        print(
+            info["sectionname"],
+            ". dominating terms of order 3 in ",
+            info["uname"],
+            "[0]:",
+            [[j[1].tolist(), j[2]] for j in dmt(3, 0)],
+        )
 
-    print(
-        info["sectionname"],
-        ". Showing the lowest of power of x,y in every eigenvector :",
-    )
+        print(
+            info["sectionname"],
+            ". Showing the lowest of power of x,y in every eigenvector :",
+        )
     for k in range(len(u)):
         tmp = [sum(j) for i, j in enumerate(powerindex) if abs(u[k][i]) > tol2]
         if tmp != []:
-            print("k=", k, " lowest order=", min(tmp))
+            if DEBUG:
+                print("k=", k, " lowest order=", min(tmp))
     return
 
 
@@ -235,7 +249,8 @@ def wwJmatrix(uarray, Zpar3):
                 sqn = sequencenumber[dpw[0], dpw[1], dpw[2], dpw[3]]
                 Dxn[n, sqn, k] = pw[n]
                 if k == 1:
-                    print("Dx[n,sqn,k],sqn,k, pw=", Dxn[n, sqn, k], sqn, k, pw)
+                    if DEBUG:
+                        print("Dx[n,sqn,k],sqn,k, pw=", Dxn[n, sqn, k], sqn, k, pw)
 
     wmatrix = jfdf.d3(uarray, As, bKi)
     wJmatrix = np.dot(Dxn, wmatrix.transpose()).transpose([2, 0, 1])
@@ -303,7 +318,7 @@ def gettpsa(
                         map(int, [px, pxp, py, pyp, pdeltap])
                     )  # convert real (read from the file) into integer
                     mfrow[sequencenumber[px, pxp, py, pyp]] += (
-                        coeff * deltap ** pdeltap
+                        coeff * deltap**pdeltap
                     )  # for each set of power of x0,xp0,y0,yp0, add contribution from different power of deltap
                 mfmadx.append(mfrow)
             sv("mfmadxsaved", [mfmadx, powerindex, sequencenumber])
@@ -315,7 +330,8 @@ def gettpsa(
         usecode["tpsacode"] == "yoshitracy" or usecode["tpsacode"] == "yuetpsa"
     ):
         # 3. Generate powerindex
-        print("\n3. Generate powerindex and sequencenumber")
+        if DEBUG:
+            print("\n3. Generate powerindex and sequencenumber")
         # sequencenumber[i1,i2,i3,i4] gives the sequence number in power index for power of x^i1*xp^i2*y^i3*yp^i4
         sequencenumber = np.zeros((norder + 1, norder + 1, norder + 1, norder + 1), "i")
         powerindex = sqdf.powerindex4(norder)
@@ -383,11 +399,30 @@ def gettpsa(
                     plt.semilogy(
                         np.abs(np.array(mfmadx) - np.array(mfmadx_yue)).T, ".-"
                     )
-                sv("mfmadx_yuesaved", [mfmadx_yue, ltefilename, deltap])
+
+                if usecode.get("tmp", True):
+                    temp = tempfile.NamedTemporaryFile(
+                        suffix="", prefix="tmp_", dir=os.getcwd(), delete=True
+                    )
+                    mfmadx_fpstr = f"{temp.name}_mfmadx_yue.pkl"
+                    oneturntpsa_fpstr = f"{temp.name}_oneturntpsa_yue.tps"
+                    wwJmtx_fpstr = f"{temp.name}_wwJmtx.pkl"
+                    temp.close()
+                else:
+                    mfmadx_fpstr = "mfmadx_yuesaved"
+                    oneturntpsa_fpstr = "oneturntpsa_yue_saved"
+                    wwJmtx_fpstr = "wwJmtx_saved"
+
+                sv(mfmadx_fpstr, [mfmadx_yue, ltefilename, deltap])
                 oneturntpsa = tps_list_yue
-                PyTPSA.save("oneturntpsa_yue_saved", oneturntpsa)
+                PyTPSA.save(oneturntpsa_fpstr, oneturntpsa)
             else:
-                mfmadx_yue, ltefilename_saved, deltap_saved = rl("mfmadx_yuesaved")
+                mfmadx_fpstr = usecode.get("mfmadx_filepath", "mfmadx_yuesaved")
+                oneturntpsa_fpstr = usecode.get(
+                    "oneturntpsa_filepath", "oneturntpsa_yue_saved"
+                )
+
+                mfmadx_yue, ltefilename_saved, deltap_saved = rl(mfmadx_fpstr)
                 if ltefilename_saved != ltefilename or deltap_saved != deltap:
                     print(
                         "\n\n\nltefilename or deltap differ from saved data, use use_existing_tpsa=0"
@@ -400,7 +435,7 @@ def gettpsa(
                     )
                     print("deltap=", deltap, "deltap_saved=", deltap_saved)
                     raise RuntimeError
-                oneturntpsa = PyTPSA.load("oneturntpsa_yue_saved")
+                oneturntpsa = PyTPSA.load(oneturntpsa_fpstr)
 
             mfmadx = mfmadx_yue
     elif oneturntpsa != "ELEGANT" and usecode["tpsacode"] == "yuetpsa":
@@ -425,7 +460,12 @@ def gettpsa(
             '\n\n\nExit!!\n\nSaved mfmadx doe not match norder!\n\nSet usecode["use_existing_tpsa"]=0, or change norder and try again.'
         )
         sys.exit(0)
-    return mfmadx, sqmxparameters, [mfmadx, norder, powerindex]
+    return (
+        mfmadx,
+        sqmxparameters,
+        [mfmadx, norder, powerindex],
+        dict(mfmadx=mfmadx_fpstr, oneturntpsa=oneturntpsa_fpstr, wwJmtx=wwJmtx_fpstr),
+    )
 
 
 def getMlist(
@@ -436,9 +476,11 @@ def getMlist(
     norder_jordan,
     mapMatrixMlist,
     usecode="ELEGANT",
+    copy_LTE_file=False,
 ):
-    tt0 = [["getM, 1, start", time.time(), 0]]
-    print(tt0)
+    if DEBUG:
+        tt0 = [["getM, 1, start", time.time(), 0]]
+        print(tt0)
     (
         Ms10,
         phix0,
@@ -458,8 +500,9 @@ def getMlist(
         dmuxy,
     ) = lte2tpsa.dpmap(mfmadx, deltap, sqmxparameters)
     # sv("jfM.dat",[Ms10,phix0,phiy0,powerindex,norder,bK,bKi,sqrtbetax,sqrtbetay,msf,tbl,scalemf,deltap,xfix,xpfix])
-    tt1 = [["getM, 2", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["getM, 2", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     mapMatrixM = dict(
         zip(
@@ -484,9 +527,10 @@ def getMlist(
             ],
         )
     )
-    os.system(
-        "cp " + ltefilename + ".lte junk.lte"
-    )  # choose elegant input lattice lte file junk.lte
+    if copy_LTE_file:
+        os.system(
+            "cp " + ltefilename + ".lte junk.lte"
+        )  # choose elegant input lattice lte file junk.lte
     # take jordan vector order as norder_jordan to replace norder
     norder = norder_jordan
     plen = (norder + 1) * (norder + 2) * (norder + 3) * (norder + 4) / 24
@@ -506,15 +550,17 @@ def getMlist(
 
     mlen = len(Ms10)
 
-    tt1 = [["getM, 3", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["getM, 3", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     # 3.Check Jordan block phiy0
     uy, uybar, Jy, scaley, Msy, As2y, Asm2y = jfdf.UMsUbarexpJ(
         Ms10, phiy0, 1, powerindex, scalemf, sequencenumber[0, 0, 1, 0], ypowerorder=7
     )
-    tt1 = [["getM, 4", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["getM, 4", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     checkjnf(
         uy,
@@ -539,7 +585,8 @@ def getMlist(
 
     # 4. Check block phix0
 
-    print("\n6. Check ux as left eigenvectors of M: ux.M=exp(i*mux)*exp(Jx).ux:")
+    if DEBUG:
+        print("\n6. Check ux as left eigenvectors of M: ux.M=exp(i*mux)*exp(Jx).ux:")
     ux, uxbar, Jx, scalex, Msx, As2x, Asm2x = jfdf.UMsUbarexpJ(
         Ms10, phix0, 1, powerindex, scalemf, sequencenumber[1, 0, 0, 0], ypowerorder=7
     )
@@ -579,8 +626,9 @@ def getMlist(
     # print("\n5. Construct map matrix V from zsbar plane to w plane")
     # maxchainlenpositionx, maxchainlenx, chainx, chainpositionx=jfdf.findchainposition(Jx)
     # maxchainlenpositiony, maxchainleny, chainy, chainpositiony=jfdf.findchainposition(Jy)
-    tt1 = [["getM, 5", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["getM, 5", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     return (
         mapMatrixM,
@@ -598,7 +646,7 @@ def getMlist(
     )
 
 
-def wwJwinvf(uarray, Zpar3, use_existing_tpsa=0):
+def wwJwinvf(uarray, Zpar3, use_existing_tpsa=0, saved_filepath=""):
     # Zpar=bKi,scalex,norder,powerindex
     # 5. Construct w,wc tpsa
     """Hao yue's inverse matrix method:
@@ -617,9 +665,16 @@ def wwJwinvf(uarray, Zpar3, use_existing_tpsa=0):
     And for one turn map calculation, we need more accurate norder=7.
     Hence we use norder =3,5,7 in 3 different places.
     """
+
+    if saved_filepath:
+        wwJmtx_fpstr = saved_filepath
+    else:
+        wwJmtx_fpstr = "wwJmtx_saved"
+
     if use_existing_tpsa == 0:
-        print("now calculating inverse tpsa winv")
-        tt0 = [["start", time.time(), 0]]
+        if DEBUG:
+            print("now calculating inverse tpsa winv")
+            tt0 = [["start", time.time(), 0]]
         # PyTPSA.initialize(4, 3)
         # w, wJ = wwJ(uarray, Zpar3)
         w3mtx, w3Jmtx = wwJmatrix(uarray, Zpar3)
@@ -628,10 +683,10 @@ def wwJwinvf(uarray, Zpar3, use_existing_tpsa=0):
         w0, winv = wwinv(ux0, uy0, Zpar3)
         w5mtx = np.array([i.pvl()[1] for i in w0])
         w5invmtx = np.array([i.pvl()[1] for i in winv])
-        sv("wwJmtx_saved", [w3mtx, w3Jmtx, w5mtx, w5invmtx])
+        sv(saved_filepath, [w3mtx, w3Jmtx, w5mtx, w5invmtx])
         wwJwinv = w3mtx, w3Jmtx, w5mtx, w5invmtx, norder_winv, powerindex_winv
     elif use_existing_tpsa == 1:
-        w3mtx, w3Jmtx, w5mtx, w5invmtx = rl("wwJmtx_saved")
+        w3mtx, w3Jmtx, w5mtx, w5invmtx = rl(wwJmtx_fpstr)
         wwJwinv = w3mtx, w3Jmtx, w5mtx, w5invmtx, norder_winv, powerindex_winv
     return wwJwinv
 
@@ -713,15 +768,18 @@ def matrixsort(
 
 
 def oneturnmatrixmap(xy0, mfmadx, norder, powerindex7):
-    tt0 = [["in oneturnmatrixmap 1, start", time.time(), 0]]
-    print("tt0=", tt0)
+    if DEBUG:
+        tt0 = [["in oneturnmatrixmap 1, start", time.time(), 0]]
+        print("tt0=", tt0)
     Zs0 = zcolnew.zcolarray(xy0, norder, powerindex7)
     # Zs0 = zcolarray.zcolarray(xy0, norder, powerindex7)
-    tt1 = [["in oneturnmatrixmap 2", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in oneturnmatrixmap 2", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     xy1 = np.dot(mfmadx, Zs0.transpose()).transpose()
-    tt1 = [["in oneturnmatrixmap 3", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in oneturnmatrixmap 3", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     return xy1
 
 
@@ -729,8 +787,9 @@ def vphi(
     xyd0, ab, uvar, v0norm, oneturntpsa, Vmtx, outxv=1
 ):  # Calculate i*phi as function of the action angle of v to see its DC value and fluctuation
     # import pdb;
-    tt0 = [["vphi, 1, start", time.time(), 0]]
-    print(tt0)
+    if DEBUG:
+        tt0 = [["vphi, 1, start", time.time(), 0]]
+        print(tt0)
     if oneturntpsa == "ELEGANT":
         trackcode = "ELEGANT"
     elif oneturntpsa == "Tracy":
@@ -760,8 +819,9 @@ def vphi(
     y0off = 0e-7  # it is found that there is an round off error in elegant that causes residual energy delta non-zero and caused an offset for x0 and xp0
     yp0off = 0e-10  # which is to be removed here for Jordan form calculation. This offsets are found when we reduce the radius in w plane, the circle in the
 
-    tt1 = [["vphi, 2 end", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 2 end", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
     if trackcode == "ELEGANT":
         with open("beamsddshead", "w") as f:
             f.write(_get_beamsddshead_contents())
@@ -866,8 +926,9 @@ def vphi(
     else:
         raise NotImplementedError(f"TRACKING_CODE = {TRACKING_CODE}")
 
-    tt1 = [["vphi, 3 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 3 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     x1, xp1, y1, yp1 = [xxp1[:, i] for i in range(4)]
     # every row of x0x1 give theta10,theta20,x0,xp0y0,yp0,x1,xp,y1,yp1. x0 is for turn 0, x1 is for turn1, so x0x1 is a map from x0 to x1 as a function on the theta1,theta2 plane
     # theta10,theta20,x0,xp0,y0,yp0,x1,xp1,y1,yp1=array(list(zip(*x0x1)))#x0x1 is z1 as function of z0 on the theta plane.
@@ -879,8 +940,9 @@ def vphi(
     # x0x1 = array(
     #    [x0, xp0, y0, yp0, x1, xp1, y1, yp1]
     # ).transpose()  # after shifting origin to xfix, recover x0x1.
-    tt1 = [["vphi, 4 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 4 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     xy0 = scan.transpose()  # np.array([x0, xp0, y0, yp0])
     xy1 = np.array([x1, xp1, y1, yp1])
     # zs0 = Zszaray(xy0, Zpar)
@@ -900,8 +962,9 @@ def vphi(
     v11 = np.dot(v1x0, zs1.transpose())
     v21 = np.dot(v2x0, zs1.transpose())
     """
-    tt1 = [["vphi, 5, 2zsdx", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 5, 2zsdx", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     av10, av20 = (
         abs(v10),
         abs(v20),
@@ -910,8 +973,9 @@ def vphi(
         abs(v11),
         abs(v21),
     )  # turn 1
-    tt1 = [["vphi, 5.1 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 5.1 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     thetav10, thetav20 = np.log(v10).imag, np.log(v20).imag
     thetav11, thetav21 = np.log(v11).imag, np.log(v21).imag
     """
@@ -930,14 +994,16 @@ def vphi(
         array(list(map(cmath.phase, v21))),
     )  # turn 1
     """
-    tt1 = [["vphi, 6 , logv12", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 6 , logv12", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     th10, th20 = thetav10[0], thetav20[0]
     phi1a = -1j * np.log(av11 / av10) + modularToPi(thetav11 - thetav10)
     phi2a = -1j * np.log(av21 / av20) + modularToPi(thetav21 - thetav20)
     # print("len(x0x1),len(phi1a),len(phi2a)=",len(x0x1),len(phi1a),len(phi2a))
-    tt1 = [["vphi, 7 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 7 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     phi1a = phi1a.reshape([len(phi1a), 1])
     phi2a = phi2a.reshape([len(phi2a), 1])
     av10, av20, thetav10, thetav20 = (
@@ -954,8 +1020,9 @@ def vphi(
         thetav11.reshape([len(phi1a), 1]),
         thetav21.reshape([len(phi1a), 1]),
     )
-    tt1 = [["vphi, 8 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 8 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
     # fluc=np.hstack([x0x1,phi1a,phi2a,av10,av20,thetav10,thetav20,v10,v20,v11,v21])
     fluc = [
         x0,
@@ -1002,10 +1069,11 @@ def vphi(
         )
         fluc = list(zip(*fluc))
     """
-    tt1 = [["vphi, 9 end", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
-    tt1 = [["vphi, 10 end", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["vphi, 9 end", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
+        tt1 = [["vphi, 10 end", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
     return fluc  # np.array(fluc)
 
 

@@ -9,6 +9,7 @@ from copy import deepcopy
 import pickle
 from types import SimpleNamespace
 import pdb
+from pathlib import Path
 
 import numpy as np
 from numpy import array
@@ -26,6 +27,9 @@ from . import (
     veq59 as veq,
 )  # copied from veq52.py. veqnsls2sr_supercell_ch77_20150406_1_deltap0_lt11 as veq#veq20140204_bare_1supcell_deltapm02 as veq
 from .fortran import zcol, zcolnew
+
+# DEBUG = True
+DEBUG = False
 
 t0.append(["41", time.time(), time.time() - t0[-1][1]])
 
@@ -135,13 +139,14 @@ def Zsz(xs, Zpar):
 
 
 def latticeparamters(lattice, oneturntpsa="ELEGANT"):
-    tt0 = [["latticep, 1, start", time.time(), 0]]
-    print(tt0)
+    if DEBUG:
+        tt0 = [["latticep, 1, start", time.time(), 0]]
+        print(tt0)
 
     mapMatrixMlist = "Ms10,phix0,phiy0,powerindex,norder,bK,bKi,sqrtbetax,sqrtbetay,msf,tbl,scalemf,deltap,xfix,xpfix,dmuxy".split(
         ","
     )
-    mfm, sqmxparameters, oneturntpsa = veq.gettpsa(
+    mfm, sqmxparameters, oneturntpsa, filepath_d = veq.gettpsa(
         lattice.ltefilename,
         lattice.deltap,
         nv=lattice.nv,
@@ -151,18 +156,20 @@ def latticeparamters(lattice, oneturntpsa="ELEGANT"):
         oneturntpsa="ELEGANT",
         mod_prop_dict_list=lattice.mod_prop_dict_list,
     )
-    tt1 = [["latticep, 2", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
-    timing.append(
-        [
-            " in latticeparamters, 2 after gettpsa",
-            time.time(),
-            timing[-1][1] - timing[-2][1],
-        ]
-    )
+    if DEBUG:
+        tt1 = [["latticep, 2", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
+        timing.append(
+            [
+                " in latticeparamters, 2 after gettpsa",
+                time.time(),
+                timing[-1][1] - timing[-2][1],
+            ]
+        )
 
-    tt1 = [["latticep, 3", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["latticep, 3", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     (
         mapMatrixM,
@@ -186,38 +193,41 @@ def latticeparamters(lattice, oneturntpsa="ELEGANT"):
         mapMatrixMlist,
         usecode=lattice.usecode,
     )
-    tt1 = [["latticep, 4", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
-    timing.append(
-        [
-            " in latticeparamters, 3 after getMlist",
-            time.time(),
-            timing[-1][1] - timing[-2][1],
-        ]
-    )
+    if DEBUG:
+        tt1 = [["latticep, 4", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
+        timing.append(
+            [
+                " in latticeparamters, 3 after getMlist",
+                time.time(),
+                timing[-1][1] - timing[-2][1],
+            ]
+        )
     maxchainlenpositionx, maxchainlenx, chainx, chainpositionx = jfdf.findchainposition(
         Jx
     )
     maxchainlenpositiony, maxchainleny, chainy, chainpositiony = jfdf.findchainposition(
         Jy
     )
-    timing.append(
-        [
-            " in latticeparamters, 4 before mapMatrixM.",
-            time.time(),
-            timing[-1][1] - timing[-2][1],
-        ]
-    )
+    if DEBUG:
+        timing.append(
+            [
+                " in latticeparamters, 4 before mapMatrixM.",
+                time.time(),
+                timing[-1][1] - timing[-2][1],
+            ]
+        )
     dmuxy = mapMatrixM["dmuxy"]
-    print(
-        '\n6. mapMatrixM["dmuxy"]=',
-        mapMatrixM["dmuxy"],
-        "maxchainlenx=",
-        maxchainlenx,
-        "maxchainleny=",
-        maxchainleny,
-        "\n",
-    )
+    if DEBUG:
+        print(
+            '\n6. mapMatrixM["dmuxy"]=',
+            mapMatrixM["dmuxy"],
+            "maxchainlenx=",
+            maxchainlenx,
+            "maxchainleny=",
+            maxchainleny,
+            "\n",
+        )
     """
     if norder < 5:
         ux0, uy0, ux1, uy1, ux2, uy2, ux3, uy3 = (
@@ -254,32 +264,34 @@ def latticeparamters(lattice, oneturntpsa="ELEGANT"):
         lattice.xfix = xfix
         lattice.xpfix = xpfix
 
-    timing.append(
-        [" in latticeparamters, 6 end.", time.time(), timing[-1][1] - timing[-2][1]]
-    )
-    tt1 = [["latticep, 5", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        timing.append(
+            [" in latticeparamters, 6 end.", time.time(), timing[-1][1] - timing[-2][1]]
+        )
+        tt1 = [["latticep, 5", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
-    return lattice, oneturntpsa
+    return lattice, oneturntpsa, filepath_d
 
 
 def setup(lattice, oneturntpsa="ELEGANT"):
     timing.append([" in setup, 1", time.time(), timing[-1][1] - timing[-2][1]])
 
-    lattice, oneturntpsa = latticeparamters(lattice, oneturntpsa="ELEGANT")
+    lattice, oneturntpsa, filepath_d = latticeparamters(lattice, oneturntpsa="ELEGANT")
 
-    timing.append(
-        [
-            " in setup, 2 after latticeparamters",
-            time.time(),
-            timing[-1][1] - timing[-2][1],
-        ]
-    )
+    if DEBUG:
+        timing.append(
+            [
+                " in setup, 2 after latticeparamters",
+                time.time(),
+                timing[-1][1] - timing[-2][1],
+            ]
+        )
 
     uarray = np.array([lattice.ux[0], lattice.uy[0]])
     lattice.uarray = uarray
     # xacoeff0 = ari2x(lattice.acoeff0)
-    return lattice, oneturntpsa
+    return lattice, oneturntpsa, filepath_d
 
 
 def trackingvn(xmax, ymax, vna, Zpar, deltap, xfix, xpfix, npass, lattice):
@@ -849,8 +861,9 @@ def renewX(
     usewinv=0,
     applyCauchylimit=False,
 ):
-    tt0 = [["in bnm 1, start", time.time(), 0]]
-    print("tt0=", tt0)
+    if DEBUG:
+        tt0 = [["in bnm 1, start", time.time(), 0]]
+        print("tt0=", tt0)
 
     (
         xacoeff,
@@ -867,8 +880,9 @@ def renewX(
         usexp0dlast,
     ) = [renewXinput[i] for i in renewXinput.keys()]
 
-    tt1 = [["in bnm,1.1", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm,1.1", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
 
     # define action angle variables v1,v2 by matrices##################
     for construct_v12_dv12_wwJ_matrices in [1]:
@@ -880,8 +894,9 @@ def renewX(
         vna[0] = vna[0] / v0norm[0]  # vna is normalized with v0norm
         vna[1] = vna[1] / v0norm[1]
         v120i = np.dot(vna, zs0)
-        tt1 = [["in bnm,1.2", time.time(), time.time() - tt1[0][1]]]
-        print("tt1=", tt1)
+        if DEBUG:
+            tt1 = [["in bnm,1.2", time.time(), time.time() - tt1[0][1]]]
+            print("tt1=", tt1)
 
         # if useinversetpsa:
         if True:
@@ -899,8 +914,9 @@ def renewX(
             dVdXmtx = [dv1dXmtx, dv2dXmtx]
         else:
             Vmtx, dVdXmtx = None, None
-    tt1 = [["in bnm,1.3", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm,1.3", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
 
     # v_theta scan ####################################################
     for run_vthetascan in [1]:
@@ -925,24 +941,28 @@ def renewX(
             findsoparamters=findsoparamters,
         )
         # decide whether to use vthetascan or not:
-        tt1 = [["in bnm,1.4", time.time(), time.time() - tt1[0][1]]]
-        print("tt1=", tt1)
+        if DEBUG:
+            tt1 = [["in bnm,1.4", time.time(), time.time() - tt1[0][1]]]
+            print("tt1=", tt1)
         # vthetascan #################################################
         if usexp0dlast == 0:
             # vthetascan #################################################
-            tt1 = [["in bnm,1.5", time.time(), time.time() - tt1[0][1]]]
-            print("tt1=", tt1)
+            if DEBUG:
+                tt1 = [["in bnm,1.5", time.time(), time.time() - tt1[0][1]]]
+                print("tt1=", tt1)
             xyd0, vthetascanmsg = vph.vthetascan_use_x0dlast3(
                 acoeff, veq.veq1, vscaninput, wwJwinv[2:]
             )
         else:
-            tt1 = [["in bnm,1.6", time.time(), time.time() - tt1[0][1]]]
-            print("tt1=", tt1)
+            if DEBUG:
+                tt1 = [["in bnm,1.6", time.time(), time.time() - tt1[0][1]]]
+                print("tt1=", tt1)
             xyd0 = xydlast
             vthetascanmsg = dict(msg="use xyd as xyd0", numberdivgence=0)
 
-    tt1 = [["in bnm,2 vthetascan", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm,2 vthetascan", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
 
     ## vphi ################################################
     for run_vphi_and_get_fluc in [1]:
@@ -968,8 +988,9 @@ def renewX(
             thetav11,
             thetav21,
         ) = veq.vphi(xyd0, acoeff, uvar, v0norm, oneturntpsa, Vmtx, outxv=1)
-        tt1 = [["in bnm, 2.1 vphi", time.time(), time.time() - tt1[0][1]]]
-        print("tt1=", tt1)
+        if DEBUG:
+            tt1 = [["in bnm, 2.1 vphi", time.time(), time.time() - tt1[0][1]]]
+            print("tt1=", tt1)
         flucful = dict(
             x0d=x0d,
             xp0d=xp0d,
@@ -993,8 +1014,9 @@ def renewX(
             thetav21=thetav21,
         )
         fluc = phi1, phi2, thetav10[0], thetav20[0]
-    tt1 = [["in bnm, 2.4 ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm, 2.4 ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     # bnmphiCauchyCutoffWithIntrokam #################################################
     (
         aphi1,
@@ -1010,8 +1032,9 @@ def renewX(
     ) = vph.bnmphiCauchyCutoffWithIntrokam(
         fluc, n_theta, n_theta, lattice.Cauchylimit, applyCauchylimit, dt=1
     )
-    tt1 = [["in bnm, 2.5 bnmphiCauchy", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm, 2.5 bnmphiCauchy", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
 
     ##################################################
 
@@ -1020,7 +1043,10 @@ def renewX(
         v1n, v2n = vph.inversefftnew2(
             bnm1, bnm2, n_theta, v120i
         )  # thetav10 is the angle of the rigid rotation v10, as the zeroth order approximation.
-        timing.append(["3. inversefftnew2", time.time(), time.time() - timing[-1][1]])
+        if DEBUG:
+            timing.append(
+                ["3. inversefftnew2", time.time(), time.time() - timing[-1][1]]
+            )
         inversevinput = dict(
             acoeff=acoeff,
             Vmtx=Vmtx,
@@ -1040,27 +1066,35 @@ def renewX(
             Zpar=Zpar3,
             findsoparamters=findsoparamters,
         )
-        tt1 = [
-            ["in bnm, 3, before inversev1v2,2", time.time(), time.time() - tt1[0][1]]
-        ]
+        if DEBUG:
+            tt1 = [
+                [
+                    "in bnm, 3, before inversev1v2,2",
+                    time.time(),
+                    time.time() - tt1[0][1],
+                ]
+            ]
+            print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm 4 after inversev1v2", time.time(), time.time() - tt1[0][1]]]
         print("tt1=", tt1)
-    tt1 = [["in bnm 4 after inversev1v2", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
 
     # inverse_v1v2 #################################################
     xyd, Zsdx, inversev1v2msg = vph.inversev1v2(veq.veq1, inversevinput, usexyd=1)
     if np.amax(abs(xyd)) > 1:
         return None
 
-    tt1 = [["in bnm 5 ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm 5 ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
 
     # Fmatrix #################################################
     F, v1a, v2a, fv1a, fv2a = vph.Fmatrix(
         Zsdx, wmtx, n_theta, acoeff, nvar, v0norm, uarray, Vmtx
     )
-    tt1 = [["in bnm 6 Fmatrix", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm 6 Fmatrix", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
     # anew12 #################################################
 
     try:
@@ -1068,20 +1102,23 @@ def renewX(
             F, nux, nuy, nvar, n_theta, lattice.Cauchylimit, lattice.ntune
         )
     except Exception as err:
-        print(dir(err))
-        print("after vph.anew12 in renewX")
+        if DEBUG:
+            print(dir(err))
+            print("after vph.anew12 in renewX")
         bnmout = None
         return bnmout
 
-    tt1 = [["in bnm 7 anew12", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm 7 anew12", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
 
     # prepare_bnmout #################################################
     for prepare_bnmout in [1]:
         xacoeffnew = ari2x(acoeffnew)
         bnm1tmp, bnm2tmp = bnm1.copy(), bnm2.copy()
-        tt1 = [["in bnm 8 ", time.time(), time.time() - tt1[0][1]]]
-        print("tt1=", tt1)
+        if DEBUG:
+            tt1 = [["in bnm 8 ", time.time(), time.time() - tt1[0][1]]]
+            print("tt1=", tt1)
         bnm1tmp[0, 0], bnm2tmp[0, 0] = 0, 0
         flucbnm = {
             "xmax": xmax,
@@ -1141,10 +1178,11 @@ def renewX(
         # print ('in bnm:2 xyd[2,7]=',xyd[2,7])
         lattice.v0norm = v0norm
         bnmout["lattice"] = deepcopy(lattice)
-    tt1 = [["in bnm, 9 end ", time.time(), time.time() - tt1[0][1]]]
-    print("tt1=", tt1)
-    tt1 = [["in bnm, 10 end ", time.time(), time.time() - tt0[0][1]]]
-    print("tt1=", tt1)
+    if DEBUG:
+        tt1 = [["in bnm, 9 end ", time.time(), time.time() - tt1[0][1]]]
+        print("tt1=", tt1)
+        tt1 = [["in bnm, 10 end ", time.time(), time.time() - tt0[0][1]]]
+        print("tt1=", tt1)
     return bnmout
 
 
@@ -1185,11 +1223,13 @@ def iterXs(
         # xacoeffnew and xydlast are udated in every iteration
 
         # iterxydinput=dict(zip(iterxydinputlist,[xacoeffnew,xmax,ymax,xydlast,uarray,acoeff0,nvar,n_theta,uvar,Zpar,findsoparamters,usexp0dlast]))
-        tt1 = [["iterxacoeffnew,, 2, ", time.time(), time.time() - tt0[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["iterxacoeffnew,, 2, ", time.time(), time.time() - tt0[0][1]]]
+            print(tt1)
         ##########################################################
         try:
-            print("in iterXs, aiter=,ik=", ik, "xmax=", xmax, "ymax=", ymax)
+            if DEBUG:
+                print("in iterXs, aiter=,ik=", ik, "xmax=", xmax, "ymax=", ymax)
             # renew xacoeffnew and xyd for each iteration
             renewXinput["xacoeffnew"] = xacoeffnew
             renewXinput["xydlast"] = xydlast
@@ -1219,11 +1259,13 @@ def iterXs(
                 deltaxyd(arecord, len(arecord) - 1),
             ]
         except Exception as err:
-            print(dir(err))
-            print(err.args)
+            if DEBUG:
+                print(dir(err))
+                print(err.args)
             arecord.append({"ik": ik, "err.args": err.args, "xmax": xmax, "ymax": ymax})
-        tt1 = [["iterxacoeffnew,, 3, ", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["iterxacoeffnew,, 3, ", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         ##########################################################
         arecord, deltaxydtable, iterate = iterate_condition(
             arecord, deltaxydtable, number_of_iter_after_minimum
@@ -1379,8 +1421,8 @@ def vbaction(arecordi):
 
     for i in range(-n_theta // 2, n_theta // 2):
         for j in range(-n_theta // 2, n_theta // 2):
-            u = u - 1j * bnm1[i, j] * v1n ** i * v2n ** j
-            v = v - 1j * bnm2[i, j] * v1n ** i * v2n ** j
+            u = u - 1j * bnm1[i, j] * v1n**i * v2n**j
+            v = v - 1j * bnm2[i, j] * v1n**i * v2n**j
 
     u = v1n * np.exp(u)
     v = v2n * np.exp(v)
@@ -1451,8 +1493,9 @@ def plotxacoeffnewconvergence(arecord, xc=-20e-3):
         plt.tight_layout()
         plt.savefig("junk129.png")
     except Exception as err:
-        print("error: plot nan. exit", dir(err))
-        print(err.args)
+        if DEBUG:
+            print("error: plot nan. exit", dir(err))
+            print(err.args)
     return
 
 
@@ -1587,8 +1630,9 @@ def plotiteratio(arecord, yulim=0.2):
         plotxydconvergence(arecord, xc=xylist[-1])
         plotxacoeffnewconvergence(arecord, xc=xylist[-1])
     except Exception as err:
-        print(dir(err))
-        print(err.args)
+        if DEBUG:
+            print(dir(err))
+            print(err.args)
     plt.show()
     return xlist, k
 
@@ -1815,7 +1859,7 @@ def interploation_xyd(xyd, n_theta1, n_theta2):
 
     plt.show()
     """
-    return np.array(xyd2).reshape([4, n_theta2 ** 2])
+    return np.array(xyd2).reshape([4, n_theta2**2])
 
 
 # tmp=interploation_n_theta(xyd,20,40)
@@ -1994,9 +2038,11 @@ def init_tpsa(
     npass=800,
     init_tpsa_input=None,
     lattice=None,
+    keep_saved_files=True,
 ):
-    tt0 = [["in init, 1, start", time.time(), 0]]
-    print(tt0)
+    if DEBUG:
+        tt0 = [["in init, 1, start", time.time(), 0]]
+        print(tt0)
 
     if lattice is None:
         lattice = _get_default_lattice_namespace()
@@ -2038,7 +2084,7 @@ def init_tpsa(
         xscale = (100, 1.3, 50, 0.13)
         xfactor = 33
         gu0 = 0.05 / 0.05 * np.array(xscale) * xfactor
-        gu0 = np.array([i * np.ones(n_theta ** 2) for i in gu0]).transpose()
+        gu0 = np.array([i * np.ones(n_theta**2) for i in gu0]).transpose()
         gu0 = np.array(gu0)
         findsoparamters = {
             "xtol": 1e-8,  # 1e-10,
@@ -2054,13 +2100,16 @@ def init_tpsa(
     ########################################################
     if nvar == 4:
         acoeff0 = array([[1 + 0j, 0j, 0j, 0j], [0j, 0j, 1 + 0j, 0j]])
-    if nvar == 6:
+    elif nvar == 6:
         acoeff0 = array([[1 + 0j, 0j, 0j, 0j, 0j, 0j], [0j, 0j, 0j, 1 + 0j, 0j, 0j]])
+    else:
+        raise ValueError("`nvar` must be 4 or 6.")
     lattice.acoeff0 = acoeff0
     veq.TRACKING_CODE = "ELEGANT"  #'Tracy'
     lte2tpsa.dmuytol = dmuytol  # criterion to decide resonance condition
-    tt1 = [["in init 2 ", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["in init 2 ", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     # setup oneturntpsa and lattice #######################################################
     for setup_lattice in [1]:
@@ -2068,19 +2117,20 @@ def init_tpsa(
         # if oneturntpsa!='tpsa', then oneturntpsa already exists and must be given the input to replace it as oneturntpsa=oneturntpsasaved
         if trackcode == "ELEGANT":
             lattice.usecode = dict(tpsacode="yuetpsa", use_existing_tpsa=1)
-            lattice, oneturntpsa = setup(lattice)
+            lattice, oneturntpsa, filepath_d = setup(lattice)
         elif oneturntpsa == "tpsa":
             lattice.usecode = dict(
                 tpsacode=tpsacode, use_existing_tpsa=use_existing_tpsa
             )
-            lattice, oneturntpsa = setup(lattice)
+            lattice, oneturntpsa, filepath_d = setup(lattice)
         elif oneturntpsa != "tpsa":
             lattice.usecode = dict(tpsacode="yuetpsa", use_existing_tpsa=1)
-            lattice, junk = setup(lattice)
+            lattice, junk, filepath_d = setup(lattice)
 
         lattice.Cauchylimit["aliasingCutoff"] = cutoff
-    tt1 = [["in init 3 ", time.time(), time.time() - tt1[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["in init 3 ", time.time(), time.time() - tt1[0][1]]]
+        print(tt1)
 
     # extract parameters to parepare for renewXinput #######################################################
     for parepare_renewXinput in [1]:
@@ -2125,7 +2175,7 @@ def init_tpsa(
         Zpar3 = lattice.bKi, lattice.scalex, lattice.norder_jordan, lattice.powerindex
 
         usexp0dlast = 0
-        xydlast = np.zeros([4, n_theta ** 2])
+        xydlast = np.zeros([4, n_theta**2])
 
     renewXinput = dict(
         xacoeffnew=xacoeff0,
@@ -2141,14 +2191,29 @@ def init_tpsa(
         findsoparamters=findsoparamters,
         usexp0dlast=usexp0dlast,
     )
-    tt1 = [["in init 4 ", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["in init 4 ", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
-    wwJwinv = veq.wwJwinvf(uarray, Zpar3, use_existing_tpsa=use_existing_tpsa)
+    wwJwinv = veq.wwJwinvf(
+        uarray,
+        Zpar3,
+        use_existing_tpsa=use_existing_tpsa,
+        saved_filepath=filepath_d["wwJmtx"],
+    )
     # w,wc=wtps(uarray,Zpar)
-    tt1 = [["in init 5 end", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["in init 5 end", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
     # wwJwinv: wwJ is Jacobian matrix of dw/dx
+
+    if not keep_saved_files:
+        for fp in filepath_d.values():
+            try:
+                Path(fp).unlink()
+            except:
+                pass
+
     return renewXinput, lattice, oneturntpsa, wwJwinv
 
 
@@ -2169,7 +2234,7 @@ def change_n_theta(
     xscale = findsoparamters["xscale"]
     xfactor = findsoparamters["xfactor"]
     gu0 = 0.05 / 0.05 * np.array(xscale) * xfactor
-    gu0 = np.array([i * np.ones(n_theta2 ** 2) for i in gu0]).transpose()
+    gu0 = np.array([i * np.ones(n_theta2**2) for i in gu0]).transpose()
     gu0 = np.array(gu0)
     findsoparamters["gu0"] = gu0
     renewXinput["findsoparamters"] = findsoparamters
@@ -2198,8 +2263,9 @@ def xyntheta_from_X0(
         # This is "start_from_xacoeff0_iterate_on_xacoeffnew_and_xyd" together with xyminz, i.e., 3d data for x,y,z, where z is the lowest error point of iteration
         # iteration starts from the linear combination xacoeff0 by renewXfromX0, then followed by iterXs where the xacoeffnew and xyd are iterated
         # according to iteration_parameters in the imput.
-        tt0 = [["snew0, 1. start", time.time(), 0]]
-        print(tt0)
+        if DEBUG:
+            tt0 = [["snew0, 1. start", time.time(), 0]]
+            print(tt0)
 
         init_tpsa_output = change_n_theta(
             init_tpsa_output, ntheta, xyntheta_scan_input=xyntheta_scan_input
@@ -2229,13 +2295,15 @@ def xyntheta_from_X0(
             if arecordi == None:
                 return None
         except Exception as err:
-            print(dir(err))
-            print(err.args)
+            if DEBUG:
+                print(dir(err))
+                print(err.args)
             return None
         arecordi["lattice"].uselastxyd = "always"
 
-        tt1 = [["snew0, 2, ", time.time(), time.time() - tt0[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["snew0, 2, ", time.time(), time.time() - tt0[0][1]]]
+            print(tt1)
         n_theta = arecordi["n_theta"]
         xyd = averagingxyd(arecordi["xyd"], n_theta=n_theta, averaging=averaging)
 
@@ -2249,8 +2317,9 @@ def xyntheta_from_X0(
             iterxydinput["iteration_parameters"] = iteration_parameters
 
         arecordi["iterxydinput"] = iterxydinput
-        tt1 = [["snew0, 3, ", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
+        if DEBUG:
+            tt1 = [["snew0, 3, ", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
         ar1 = iterXs(
             [arecordi],
             arecordi["xacoeffnew"],
@@ -2268,9 +2337,10 @@ def xyntheta_from_X0(
             ],
         )
 
-        tt1 = [["snew0, 4, ", time.time(), time.time() - tt1[0][1]]]
-        print(tt1)
-        tt1 = [["snew0, 5, ", time.time(), time.time() - tt0[0][1]]]
+        if DEBUG:
+            tt1 = [["snew0, 4, ", time.time(), time.time() - tt1[0][1]]]
+            print(tt1)
+            tt1 = [["snew0, 5, ", time.time(), time.time() - tt0[0][1]]]
 
         x_iter_lndxy, xset, cutoff = plot3Dxydconvergence(ar1, plot3d=False)
         x, y, z, mainidx, iteration_parameters = x_iter_lndxy
@@ -2296,8 +2366,9 @@ def xyntheta_from_X0(
         }
 
     except Exception as err:
-        print(dir(err))
-        print(err.args)
+        if DEBUG:
+            print(dir(err))
+            print(err.args)
         return
 
     return iteration_data
@@ -2435,7 +2506,7 @@ def change_n_theta2_in_findsoparamters(arecordi, n_theta2):
     xscale = findsoparamters["xscale"]
     xfactor = findsoparamters["xfactor"]
     gu0 = 0.05 / 0.05 * np.array(xscale) * xfactor
-    gu0 = np.array([i * np.ones(n_theta2 ** 2) for i in gu0]).transpose()
+    gu0 = np.array([i * np.ones(n_theta2**2) for i in gu0]).transpose()
     gu0 = np.array(gu0)
     findsoparamters["gu0"] = gu0
     return findsoparamters
@@ -2647,8 +2718,9 @@ def xyntheta_from_X_change_ntheta(
                     arecord, xc=xmax, codeused="ELEGANT"
                 )
     except Exception as err:
-        print(dir(err))
-        print(err.args)
+        if DEBUG:
+            print(dir(err))
+            print(err.args)
         lndxy = np.nan
     tt1 = [["change n_theta 6", time.time(), time.time() - tt1[0][1]]]
     tt1 = [["change n_theta 7", time.time(), time.time() - tt0[0][1]]]
@@ -2684,7 +2756,7 @@ def averagingxyd(xyd, n_theta=20, averaging=1):
         plt.plot(xydr[2][:,0],xydr[3][:,0],'g.')
         plt.plot(xydn[2],xydn[3],'r.')
         """
-    return xydn.reshape([4, n_theta ** 2])
+    return xydn.reshape([4, n_theta**2])
 
 
 """
@@ -2702,7 +2774,7 @@ def db_main_lines(ar3, i):
     n_theta = ar3[i]["lattice"].n_theta
     nux = ar3[i]["v12n"]["nux"]
     nuy = ar3[i]["v12n"]["nuy"]
-    dbs = db.reshape([n_theta ** 2])
+    dbs = db.reshape([n_theta**2])
     tmp3 = abs(dbs)
     tmp4 = vph.matrixsort(
         tmp3, n_theta

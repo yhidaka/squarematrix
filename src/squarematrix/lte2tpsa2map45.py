@@ -21,6 +21,9 @@ dmuytol = 0.005
 
 global Vm, U, maxchainlenposition, bKi, norder, powerindex
 
+# DEBUG = True
+DEBUG = False
+
 
 def modularToPi(y):
     x = copy.deepcopy(y)
@@ -47,14 +50,14 @@ def fixpoint(xx, mfmadx, powerindex):
     x, xp = xx
     x1 = sum(
         [
-            mfmadx[0][i] * x ** nx * xp ** nxp
+            mfmadx[0][i] * x**nx * xp**nxp
             for i, [nx, nxp, ny, nyp] in enumerate(powerindex)
             if ny + nyp == 0
         ]
     )
     xp1 = sum(
         [
-            mfmadx[1][i] * x ** nx * xp ** nxp
+            mfmadx[1][i] * x**nx * xp**nxp
             for i, [nx, nxp, ny, nyp] in enumerate(powerindex)
             if ny + nyp == 0
         ]
@@ -135,7 +138,8 @@ def scalingmf(mf, powerindex):
     scalem1 = 1 / scalex1
     mlen = len(powerindex)
     # 	mflen=len(mf)
-    print("in scalingmf, scalemf=", scalex1)
+    if DEBUG:
+        print("in scalingmf, scalemf=", scalex1)
     As = np.identity(mlen)
     for i in range(mlen):
         As[i, i] = scalem1 ** sum(powerindex[i])
@@ -155,15 +159,17 @@ def modularToNo2(y, N):
 
 
 def dpmap(mfmadx, deltap, sqmxparameters):
-    tt0 = [["dpmap, 1, start", time.time(), 0]]
-    print(tt0)
+    if DEBUG:
+        tt0 = [["dpmap, 1, start", time.time(), 0]]
+        print(tt0)
     powerindex, sequencenumber, nv, norder = [
         sqmxparameters[i] for i in list(sqmxparameters.keys())
     ]
     # 5.1 for a given delatap, from 5 variable tpsa, generate the 4 variable tpsa coefficient table
-    print(
-        "\n5.1 for a given delatap, generate the 4 variable tpsa coefficient table based on madx output"
-    )
+    if DEBUG:
+        print(
+            "\n5.1 for a given delatap, generate the 4 variable tpsa coefficient table based on madx output"
+        )
     # deltap=0.005#0.002
 
     if (
@@ -194,19 +200,24 @@ def dpmap(mfmadx, deltap, sqmxparameters):
                     map(int, [px, pxp, py, pyp, pdeltap])
                 )  # convert real (read from the file) into integer
                 mfrow[sequencenumber[px, pxp, py, pyp]] += (
-                    coeff * deltap ** pdeltap
+                    coeff * deltap**pdeltap
                 )  # for each set of power of x0,xp0,y0,yp0, add contribution from different power of deltap
             mfmadx.append(mfrow)
-    tt1 = [["dpmap, 2", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["dpmap, 2", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
-    t0.append(["5.1 after given specified deltaP in delta expansion, t=", time.time()])
-    print(t0[-1][0], t0[-1][1] - t0[0][1])
+    if DEBUG:
+        t0.append(
+            ["5.1 after given specified deltaP in delta expansion, t=", time.time()]
+        )
+        print(t0[-1][0], t0[-1][1] - t0[0][1])
 
     # 5.2 For off-momentum case, with deltap non zero, there should be a point where after one turn the particle remain at the same point,
     #   which is the fixed point, see S.Y's book p.122. Find fixed point xfix,xpfix (dispersion) where for the map x1=f(x0,xp0),xp1=g(x0,xp0) ,
     #   xfix=f(xfix,xpfix),xpfix=g(xfix,xpfix), so for a given deltap, xfix,xpfix is the dispersion.
-    print("\n5.2. Find fixed point (dispersion) at the specified deltaP")
+    if DEBUG:
+        print("\n5.2. Find fixed point (dispersion) at the specified deltaP")
 
     xfix, xpfix = 0, 0
     tmp1 = scipy.optimize.fsolve(
@@ -219,31 +230,35 @@ def dpmap(mfmadx, deltap, sqmxparameters):
         full_output=True,
     )
     xfix, xpfix = tmp1[0]
-    tt1 = [["dpmap, 3", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["dpmap, 3", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
-    print("\nxfix,xpfix=", xfix, xpfix)
-    print(
-        tmp1[-1],
-        "ferror=",
-        tmp1[1]["fvec"],
-        "if not cpnvergent, there is no close orbit.",
-    )
+    if DEBUG:
+        print("\nxfix,xpfix=", xfix, xpfix)
+        print(
+            tmp1[-1],
+            "ferror=",
+            tmp1[1]["fvec"],
+            "if not cpnvergent, there is no close orbit.",
+        )
 
-    t0.append(["5.2 find xfix, t=", time.time()])
-    print(t0[-1][0], t0[-1][1] - t0[0][1])
+    if DEBUG:
+        t0.append(["5.2 find xfix, t=", time.time()])
+        print(t0[-1][0], t0[-1][1] - t0[0][1])
 
     # 5.3 Shift origin using TPS variables (not matrix) so that x0=x+xfix,xp0=xp+xpfix
-
-    print(
-        "\n5.3 Shift origin using TPS variables (not matrix), to fixed point, so that x0=x+xfix,xp0=xp+xpfix, i.e., x=x0-xfix,xp=xp0-xpfix"
-    )
+    if DEBUG:
+        print(
+            "\n5.3 Shift origin using TPS variables (not matrix), to fixed point, so that x0=x+xfix,xp0=xp+xpfix, i.e., x=x0-xfix,xp=xp0-xpfix"
+        )
     # After 1 turn map, x1=f(x0,xp0),xp1=g(x0,xp0) here f,g are the tpsa of x0,xp0
     # then for the shifted origin, the new x,xp is x->x1-xfix=f(x+xfix,xp+xpfix)-xfix, xp->xp1-xpfix=g(x+xfix,xp+xpfix)-xpfix
     # Thus x=0,xp=0 is the fixed point, the origin for the shifter variable.
     mftpsa = tpsaOneTurnMap(mfmadx, xfix, xpfix, sqmxparameters, safe_mult=False)
-    tt1 = [["dpmap, 4", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["dpmap, 4", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     if False:  # Commented out by Y. Hidaka on 09/24/2020. If you want to load
         # TPS from an already-computed TPSA file, do it here.
@@ -265,24 +280,28 @@ def dpmap(mfmadx, deltap, sqmxparameters):
                 mstmp=tmp1[0]
                 """
 
-    t0.append(["5.3 after shifted mftpsa generates, t=", time.time()])
-    print(t0[-1][0], t0[-1][1] - t0[0][1])
+    if DEBUG:
+        t0.append(["5.3 after shifted mftpsa generates, t=", time.time()])
+        print(t0[-1][0], t0[-1][1] - t0[0][1])
 
     # 5.4 Derive first 4 lines of the square matrix mf with shifted origin (dispersion)
-    print(
-        "\n5.4 Derive first 4 lines of the square matrix mf with shifted origin (dispersion)"
-    )
+    if DEBUG:
+        print(
+            "\n5.4 Derive first 4 lines of the square matrix mf with shifted origin (dispersion)"
+        )
 
     mf = np.zeros((nv, len(powerindex)))
     for iVar, v in enumerate(mftpsa):
         mf[iVar, :] = np.array([v.get_polynom_coeff(index) for index in powerindex])
-    tt1 = [["dpmap, 5", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["dpmap, 5", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     # 5.5 Calculate twiss parameters from linear part of the matrix Mx,My
-    print("\n5.5 Calculate twiss parameters from linear part of the matrix Mx,My")
-    print("linear part of mf matrix showing no coupling even of-momentum:")
-    jfdf.prm(mf[:4, 1:5], 4, 4)
+    if DEBUG:
+        print("\n5.5 Calculate twiss parameters from linear part of the matrix Mx,My")
+        print("linear part of mf matrix showing no coupling even of-momentum:")
+        jfdf.prm(mf[:4, 1:5], 4, 4)
 
     xm, xpm, ym, ypm = mf
     Mx = mf[:2, 1:3]
@@ -296,30 +315,32 @@ def dpmap(mfmadx, deltap, sqmxparameters):
         phix0madx
     )  # only when phix0madx sign is correct we can get betax0>0.
     alphax0madx = (Mx[0, 0] - Mx[1, 1]) / 2.0 / np.sin(phix0madx)
-    gammax0madx = (1 + alphax0madx ** 2) / betax0madx  # -Mx[1,0]/np.sin(phix0madx)
-    print(
-        "gammax0madx*betax0madx-alphax0madx**2=",
-        gammax0madx * betax0madx - alphax0madx ** 2,
-    )
-    print(
-        "Mx[1,0] ",
-        Mx[1, 0],
-        " differs from -gammax0madx*np.sin(phix0madx)",
-        -gammax0madx * np.sin(phix0madx),
-        "\ndue to the error of tpsa:",
-    )
-    print(
-        "modify Mx[1,0] to force them equal so the twiss form is exact for linear part:"
-    )
+    gammax0madx = (1 + alphax0madx**2) / betax0madx  # -Mx[1,0]/np.sin(phix0madx)
+    if DEBUG:
+        print(
+            "gammax0madx*betax0madx-alphax0madx**2=",
+            gammax0madx * betax0madx - alphax0madx**2,
+        )
+        print(
+            "Mx[1,0] ",
+            Mx[1, 0],
+            " differs from -gammax0madx*np.sin(phix0madx)",
+            -gammax0madx * np.sin(phix0madx),
+            "\ndue to the error of tpsa:",
+        )
+        print(
+            "modify Mx[1,0] to force them equal so the twiss form is exact for linear part:"
+        )
     Mx[1, 0] = -gammax0madx * np.sin(phix0madx)
 
-    print(
-        "\ncheck Twiss form Mx, all should be zero:\n",
-        np.cos(phix0madx) + alphax0madx * np.sin(phix0madx) - Mx[0, 0],
-    )
-    print(np.cos(phix0madx) - alphax0madx * np.sin(phix0madx) - Mx[1, 1])
-    print(betax0madx * np.sin(phix0madx) - Mx[0, 1])
-    print(-gammax0madx * np.sin(phix0madx) - Mx[1, 0])
+    if DEBUG:
+        print(
+            "\ncheck Twiss form Mx, all should be zero:\n",
+            np.cos(phix0madx) + alphax0madx * np.sin(phix0madx) - Mx[0, 0],
+        )
+        print(np.cos(phix0madx) - alphax0madx * np.sin(phix0madx) - Mx[1, 1])
+        print(betax0madx * np.sin(phix0madx) - Mx[0, 1])
+        print(-gammax0madx * np.sin(phix0madx) - Mx[1, 0])
 
     My = mf[2:4, 3:5]
 
@@ -331,33 +352,38 @@ def dpmap(mfmadx, deltap, sqmxparameters):
     )  # only when phix0madx sign is correct we can get betax0>0.
     alphay0madx = (My[0, 0] - My[1, 1]) / 2.0 / np.sin(phiy0madx)
     gammay0madx = (
-        1 + alphay0madx ** 2
+        1 + alphay0madx**2
     ) / betay0madx  # gammay0madx=-My[1,0]/np.sin(phiy0madx)
-    print(
-        "gammay0madx*betay0madx-alphay0madx**2=",
-        gammay0madx * betay0madx - alphay0madx ** 2,
-    )
+    if DEBUG:
+        print(
+            "gammay0madx*betay0madx-alphay0madx**2=",
+            gammay0madx * betay0madx - alphay0madx**2,
+        )
 
-    tt1 = [["dpmap, 6", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["dpmap, 6", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
     My[1, 0] = -gammay0madx * np.sin(phiy0madx)
 
-    print(
-        "\ncheck Twiss form My, all should be zero:\n",
-        np.cos(phiy0madx) + alphay0madx * np.sin(phiy0madx) - My[0, 0],
-    )
-    print(np.cos(phiy0madx) - alphay0madx * np.sin(phiy0madx) - My[1, 1])
-    print(betay0madx * np.sin(phiy0madx) - My[0, 1])
-    print(-gammay0madx * np.sin(phiy0madx) - My[1, 0])
+    if DEBUG:
+        print(
+            "\ncheck Twiss form My, all should be zero:\n",
+            np.cos(phiy0madx) + alphay0madx * np.sin(phiy0madx) - My[0, 0],
+        )
+        print(np.cos(phiy0madx) - alphay0madx * np.sin(phiy0madx) - My[1, 1])
+        print(betay0madx * np.sin(phiy0madx) - My[0, 1])
+        print(-gammay0madx * np.sin(phiy0madx) - My[1, 0])
 
     sqrtbetax = np.sqrt(betax0madx)
     sqrtbetay = np.sqrt(betay0madx)
 
-    t0.append(["5.5 twiss parameters calculation: t=", time.time()])
-    print(t0[-1][0], t0[-1][1] - t0[0][1])
+    if DEBUG:
+        t0.append(["5.5 twiss parameters calculation: t=", time.time()])
+        print(t0[-1][0], t0[-1][1] - t0[0][1])
 
     # 5.6 Construct the BK square matrix using the first 5 rows.
-    print("\n5.6 Construct the BK square matrix using the first 5 rows.")
+    if DEBUG:
+        print("\n5.6 Construct the BK square matrix using the first 5 rows.")
     tol = 1e-12
     bK, bKi = sqdf.BKmatrix(
         betax0madx,
@@ -373,10 +399,11 @@ def dpmap(mfmadx, deltap, sqmxparameters):
         sequencenumber,
         tol,
     )
-    tt1 = [["dpmap, 7", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
-    t0.append(["5.6 Construct the BK, t=", time.time()])
-    print(t0[-1][0], t0[-1][1] - t0[0][1])
+    if DEBUG:
+        tt1 = [["dpmap, 7", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
+        t0.append(["5.6 Construct the BK, t=", time.time()])
+        print(t0[-1][0], t0[-1][1] - t0[0][1])
 
     # 5.7 For resonant block, use tune shift to exact resonance, see "shiftToExactResonance.lyx" in /Users/lihuayu/Dropbox/henonheilesshort/offmnew/theory
     # dmuy=(4*phix0madx+2*phiy0madx-2*np.pi)/2
@@ -443,14 +470,16 @@ def dpmap(mfmadx, deltap, sqmxparameters):
     )  # prepare to change 4x4 matrix into 330x330 square matrix
     tmp2 = np.zeros((4, ln - 5)) * (1.0 + 0.0j)
     edmuy = np.hstack((tmp1, edmuy, tmp2))
-    tt1 = [["dpmap, 8", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["dpmap, 8", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     edmuy = sqdf.squarematrix(edmuy, norder, powerindex, sequencenumber, tol)
 
     # Derive normalized map M=(BK)^(-1).mm.BK, see my notes 'Relation to Normal Form' of Wednesday, March 30, 2011 10:34 PM
     #   here #mfbk is the first 4 rows of M, it is
-    print("\n11. Derive normalized map M=(BK)^(-1).mm.BK")
+    if DEBUG:
+        print("\n11. Derive normalized map M=(BK)^(-1).mm.BK")
 
     mforiginal = mf.copy()  # mforiginal corresponds to my original square matrix Mx
     mfbkoriginal = jfdf.d3(
@@ -481,66 +510,73 @@ def dpmap(mfmadx, deltap, sqmxparameters):
     nux0 = phix0 / 2 / np.pi
     nuy0 = phiy0 / 2 / np.pi
 
-    print(
-        "nuxoriginal-nux,nuyoriginal-nuy,4*nux+2*nuy-1=",
-        nuxoriginal - nux,
-        "\t",
-        nuyoriginal - nuy,
-        "\t",
-        4 * nux + 2 * nuy - 1,
-    )
-    print(
-        "nux0-nux,nuy0-nuy,4*nux0+2*nuy0-1=",
-        nux0 - nux,
-        "\t",
-        nuy0 - nuy,
-        "\t",
-        4 * nux0 + 2 * nuy0 - 1,
-    )
-    print(
-        "dphiy,dmuy=",
-        dphiy,
-        dmuy,
-        "dphix,dmux=",
-        dphix,
-        dmux,
-        " nux0=",
-        nux0,
-        " nuy0=",
-        nuy0,
-    )
+    if DEBUG:
+        print(
+            "nuxoriginal-nux,nuyoriginal-nuy,4*nux+2*nuy-1=",
+            nuxoriginal - nux,
+            "\t",
+            nuyoriginal - nuy,
+            "\t",
+            4 * nux + 2 * nuy - 1,
+        )
+        print(
+            "nux0-nux,nuy0-nuy,4*nux0+2*nuy0-1=",
+            nux0 - nux,
+            "\t",
+            nuy0 - nuy,
+            "\t",
+            4 * nux0 + 2 * nuy0 - 1,
+        )
+        print(
+            "dphiy,dmuy=",
+            dphiy,
+            dmuy,
+            "dphix,dmux=",
+            dphix,
+            dmux,
+            " nux0=",
+            nux0,
+            " nuy0=",
+            nuy0,
+        )
 
     # 5.8 Scale the one turn map in z,z* space
-    print("\n5.8 Scale the one turn map in z,z* space")
-    tt1 = [["dpmap, 9", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        print("\n5.8 Scale the one turn map in z,z* space")
+        tt1 = [["dpmap, 9", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
 
     mftmp1 = array(mfbk).copy()
     mfbk, scalemf, As, Asm = scalingmf(mfbk, powerindex)
     # print("mfbk[2,3]-np.exp(1j*phiy0madx)=",mfbk[2,3]-np.exp(1j*phiy0madx))
 
     # 5.9 Construct scaled square matrix Ms
-    print("\n5.9 Construct square matrix Ms")
+    if DEBUG:
+        print("\n5.9 Construct square matrix Ms")
     # Ms =As.M.Asm is the scaled M
     Ms = sqdf.squarematrix(mfbk, norder, powerindex, sequencenumber, tol)
 
-    t0.append(["5.9 Construct scaled square matrix Ms, t= ", time.time()])
-    print(t0[-1][0], t0[-1][1] - t0[0][1])
+    if DEBUG:
+        t0.append(["5.9 Construct scaled square matrix Ms, t= ", time.time()])
+        print(t0[-1][0], t0[-1][1] - t0[0][1])
 
-    print("test deteminantes of linear part of square matrix Ms:")
-    print("det(Ms[1:3,1:3])=", np.linalg.det(Ms[1:3, 1:3]))
-    print("det(Ms[3:5,3:5])=", np.linalg.det(Ms[3:5, 3:5]))
+    if DEBUG:
+        print("test deteminantes of linear part of square matrix Ms:")
+        print("det(Ms[1:3,1:3])=", np.linalg.det(Ms[1:3, 1:3]))
+        print("det(Ms[3:5,3:5])=", np.linalg.det(Ms[3:5, 3:5]))
 
-    print(
-        "\n5.10 First, force lower subdiagonal elements to zeros, to be sure Ms is an upper triangular matrix"
-    )
+    if DEBUG:
+        print(
+            "\n5.10 First, force lower subdiagonal elements to zeros, to be sure Ms is an upper triangular matrix"
+        )
     for j in range(len(Ms)):
         for i in range(0, len(Ms)):
             if j < i:
                 Ms[i, j] = 0
     tbl, msf = [], []
-    tt1 = [["dpmap, 10", time.time(), time.time() - tt0[0][1]]]
-    print(tt1)
+    if DEBUG:
+        tt1 = [["dpmap, 10", time.time(), time.time() - tt0[0][1]]]
+        print(tt1)
     return (
         Ms,
         phix0,
@@ -561,9 +597,10 @@ def dpmap(mfmadx, deltap, sqmxparameters):
     )
 
 
-t0 = [["start, t=", time.time()]]
+if DEBUG:
+    t0 = [["start, t=", time.time()]]
 
-print(t0[-1][0], t0[-1][1] - t0[0][1])
+    print(t0[-1][0], t0[-1][1] - t0[0][1])
 
 
 def lte2madx2fort182tpsa(fn, usecode, nv=4, norder=7):
